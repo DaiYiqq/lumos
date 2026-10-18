@@ -477,6 +477,8 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 
 ### 最终状态
 
+- **CI 全绿**：`main@ae6971a` 的 4 个 job 全部 success —— Frontend、Rust (Windows)、Rust (Ubuntu 24.04)、Rust (macOS)。
+- **Release `v0.1.0` 已发布**（非草稿），资产：Windows x64/arm64（NSIS+MSI）、macOS Apple Silicon（dmg）、Linux x64（AppImage/deb/rpm）。
 - 9 个 commit，工作区干净；版本库无密钥/无个人文档。
 - 前端 9 tests、Rust 48 tests（2 ignored）、clippy/fmt/lint/typecheck 全绿。
 - 产品主链路已实机验证：导入 → 混合检索 → 带引用流式问答 → 点击引用回原文 → 历史/监听/导出/中英切换。
