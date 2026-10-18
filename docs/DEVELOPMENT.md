@@ -169,8 +169,9 @@ git push origin main --tags
 # 4. review the draft release, then publish
 ```
 
-The release workflow builds Windows (x64/arm64), macOS (Apple Silicon/Intel) and Linux bundles with
-`tauri-apps/tauri-action`.
+The release workflow builds Windows (x64/arm64), macOS (Apple Silicon) and Linux bundles with
+`tauri-apps/tauri-action`. Intel macOS is not built because the ONNX Runtime prebuilt used by
+`fastembed` does not ship an x86_64 macOS binary.
 
 ## Contributing
 
