@@ -113,3 +113,48 @@ pub struct IngestJob {
     /// 最后更新时间。
     pub updated_at: String,
 }
+
+/// 一次对话（一个会话）。
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Conversation {
+    /// 会话 UUID。
+    pub id: String,
+    /// 所属知识库。
+    pub library_id: String,
+    /// 会话标题。
+    pub title: String,
+    /// 创建时间。
+    pub created_at: String,
+    /// 最后更新时间。
+    pub updated_at: String,
+}
+
+/// 会话列表项：基础信息 + 消息条数。
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConversationSummary {
+    /// 基础信息。
+    #[serde(flatten)]
+    pub conversation: Conversation,
+    /// 消息条数。
+    pub message_count: i64,
+}
+
+/// 持久化的一条消息。
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StoredMessage {
+    /// 消息 UUID。
+    pub id: String,
+    /// 所属会话。
+    pub conversation_id: String,
+    /// user / assistant / system。
+    pub role: String,
+    /// 消息正文。
+    pub content: String,
+    /// 引用 JSON（助手消息才有）。
+    pub citations_json: Option<String>,
+    /// 创建时间。
+    pub created_at: String,
+}

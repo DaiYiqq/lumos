@@ -268,14 +268,14 @@ Provider 层：`deepseek` / `ollama` / `none` 三种实现 + 运行期自动降�
 
 ### 验收记录（实际运行结果）
 
-| 检查项 | 结果 |
-| --- | --- |
-| `cargo test` | 全部通过（含 SSE/NDJSON 解析、错误分类、Provider 顺序、Prompt 引用编号） |
-| `cargo clippy --all-targets -- -D warnings` | 零警告 |
-| **DeepSeek 真实链路** | 真实 API Key（仅通过进程环境变量注入）：`provider=deepseek`，6 条引用，回答「违约金上限为合同总额的百分之二十 [1]」 |
-| **none 离线链路** | 无 Key 无 Ollama：`provider=none`，返回 6 条带编号原文片段，明确提示「离线关键词模式」 |
-| **Ollama 协议链路** | 本地 mock NDJSON 服务：`provider=ollama`，流式收到「离线本地模型流式正常」，引用正常 |
-| 密钥泄露扫描 | 仓库与构建日志中均无 API Key 字符串 |
+| 检查项                                      | 结果                                                                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `cargo test`                                | 全部通过（含 SSE/NDJSON 解析、错误分类、Provider 顺序、Prompt 引用编号）                                            |
+| `cargo clippy --all-targets -- -D warnings` | 零警告                                                                                                              |
+| **DeepSeek 真实链路**                       | 真实 API Key（仅通过进程环境变量注入）：`provider=deepseek`，6 条引用，回答「违约金上限为合同总额的百分之二十 [1]」 |
+| **none 离线链路**                           | 无 Key 无 Ollama：`provider=none`，返回 6 条带编号原文片段，明确提示「离线关键词模式」                              |
+| **Ollama 协议链路**                         | 本地 mock NDJSON 服务：`provider=ollama`，流式收到「离线本地模型流式正常」，引用正常                                |
+| 密钥泄露扫描                                | 仓库与构建日志中均无 API Key 字符串                                                                                 |
 
 ### 踩坑记录
 
@@ -293,3 +293,53 @@ Provider 层：`deepseek` / `ollama` / `none` 三种实现 + 运行期自动降�
 ### 下一步（P5）
 
 前端问答界面：流式打字机、Markdown 渲染、`[n]` 引用可点击跳转、右侧原文面板、对话历史持久化与三个核心场景端到端跑通。
+
+---
+
+## P5 · 问答界面：流式回答、引用跳转、对话历史与设置页
+
+**状态：已完成（2026-10-18）**
+
+### 已完成
+
+- **对话持久化**：`db/repo/conversations.rs` + `commands/conversations.rs`（列表 / 创建 / 详情 / 重命名 / 删除）；
+  `chat_stream` 首次提问自动建会话（标题取问题前 24 字），写入用户消息与助手回答（含引用 JSON）。
+- **问答界面**：
+  - 会话列表（新建、重命名、删除、消息数）；
+  - 消息流 + 流式打字机 + Markdown（GFM 表格/任务列表、highlight.js 代码高亮）；
+  - `[n]` 转为可点击引用按钮，右侧「引用来源」面板展示标题、路径、页码/章节与原文片段；
+  - Provider 徽标（DeepSeek / Ollama / 离线关键词模式）、降级提示、错误提示；
+  - 三个核心场景的示例问题一键提问。
+- **设置页**：API Key 保存/删除（系统凭据库）与来源展示、Provider 探测、Ollama 地址/模型、DeepSeek 模型、嵌入状态与手动补写、主题切换、数据目录展示与打开。
+- **导航联动**：页面状态抽到 `stores/ui.ts`；知识库详情的「去提问」直接带库进入问答页。
+
+### 验收记录（实际运行结果）
+
+| 检查项 | 结果 |
+| --- | --- |
+| `cargo test` | **46 passed, 2 ignored**（新增会话生命周期/消息持久化） |
+| `cargo clippy --all-targets -- -D warnings` | 零警告 |
+| `pnpm typecheck` / `pnpm lint` | 通过（0 error / 0 warning） |
+| `pnpm test` | **8 passed**（含流式回答渲染、点击引用打开原文、离线模式徽标） |
+| 真实应用 E2E · 场景 A 文献综述 | 提问「有哪些工作用了对比学习做医学图像分割？」→ 6 个引用按钮，引用面板命中 `contrastive-learning.md` |
+| 真实应用 E2E · 场景 B 合同速查 | 提问「合同里对违约金上限是怎么约定的？」→ 8 个引用，面板命中 `contract.docx` 第九条原文 |
+| 真实应用 E2E · 场景 C 笔记回溯 | 提问「我去年夏天为什么决定换工作？」→ 10 个引用，面板命中 `personal-notes.md`「2025 年六月…」 |
+| 历史持久化 | 刷新页面后会话列表出现历史，打开后消息与引用完整加载 |
+| 截图 | `docs/assets/p5-chat.png`（三场景对话 + 引用面板同屏） |
+
+### 踩坑记录
+
+1. **react-hooks 新规则**：不允许在 try/catch 里构造 JSX、不允许 effect 内同步 setState——分别改成「try 里只算字符串」与「setTimeout 延后一拍」，并在 effect 依赖里带上 `useCallback` 包装的 refresh。
+2. **jsdom 没有 `scrollIntoView`**：聊天自动滚动要用可选调用，否则单元测试直接崩溃。
+3. **Tauri Channel 的前端联调**：`new Channel<ChatEvent>()` 直接作为 invoke 参数传入即可，事件顺序由后端保证；真实应用里验证了流式增量、引用与 Done 的先后关系。
+4. **E2E 选择器两个坑**：`aria-label` 的引号二次转义会拼出非法 selector；`aside:last-of-type` 会命中外层侧边栏——改为给引用面板加 `aria-label="引用面板"`。
+
+### 与任务书的偏差
+
+- **代码高亮样式**目前是 highlight.js + 自定义最小样式，深浅色统一视觉打磨留到 P6。
+- **i18n（中/英）、数据导出、文件监听**尚未实现，按计划在 P6/P7 完成。
+- **真实 Ollama 模型端到端**仍未跑（使用 mock 验证协议），P6 有需要时补测。
+
+### 下一步（P6）
+
+打磨：深浅色视觉走查、i18n、性能（大列表虚拟化、模型/检索缓存）、错误边界、文件监听与导出入口。

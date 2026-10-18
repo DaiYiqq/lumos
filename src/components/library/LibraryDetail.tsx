@@ -6,6 +6,7 @@ import {
   FileText,
   FolderPlus,
   Loader2,
+  MessagesSquare,
   Pause,
   Play,
   RefreshCw,
@@ -23,6 +24,7 @@ import { isTauriRuntime, importPaths as callImportPaths } from "@/lib/tauri";
 import { formatBytes, formatDateTime } from "@/lib/utils";
 import { useDocumentsStore } from "@/stores/documents";
 import { useLibrariesStore } from "@/stores/libraries";
+import { useUiStore } from "@/stores/ui";
 import type { IngestProgress, IngestJob, LibrarySummary } from "@/types";
 
 interface LibraryDetailProps {
@@ -45,6 +47,8 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
   const cancelJob = useDocumentsStore((state) => state.cancelJob);
   const removeDocument = useDocumentsStore((state) => state.removeDocument);
   const loadLibraries = useLibrariesStore((state) => state.load);
+  const setActiveView = useUiStore((state) => state.setActiveView);
+  const setSelectedLibraryId = useUiStore((state) => state.setSelectedLibraryId);
 
   const [importing, setImporting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -171,6 +175,15 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
           <Button variant="secondary" onClick={() => void handleImport(true)} disabled={importing}>
             <FolderPlus size={15} aria-hidden="true" />
             导入文件夹
+          </Button>
+          <Button
+            onClick={() => {
+              setSelectedLibraryId(library.id);
+              setActiveView("chat");
+            }}
+          >
+            <MessagesSquare size={15} aria-hidden="true" />
+            去提问
           </Button>
         </div>
       </header>

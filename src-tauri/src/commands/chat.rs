@@ -4,13 +4,15 @@
 //! 都会发送明确的 `notice` 事件，绝不静默改变模式。
 
 use std::collections::VecDeque;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 use tauri::State;
 use tauri::ipc::Channel;
 
+use crate::db::models::Conversation;
+use crate::db::repo::conversations as conversation_repo;
 use crate::providers::{self, ChatMessage, ChatRequest, ProviderEvent, ProviderId, prompt};
 use crate::retrieval::{self, SearchHit, SearchMode};
 use crate::security;
@@ -20,6 +22,13 @@ use crate::state::AppState;
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ChatEvent {
+    /// 本次对话的会话（首次提问时自动创建）。
+    Conversation {
+        /// 会话 ID。
+        id: String,
+        /// 会话标题。
+        title: String,
+    },
     /// 当前使用的 Provider（前端据此显示模式徽标）。
     Provider {
         /// Provider 标识。
@@ -88,6 +97,7 @@ pub async fn chat_stream(
     state: State<'_, AppState>,
     library_id: String,
     question: String,
+    conversation_id: Option<String>,
     history: Option<Vec<ChatMessage>>,
     channel: Channel<ChatEvent>,
 ) -> Result<(), String> {
@@ -95,6 +105,14 @@ pub async fn chat_stream(
     if question.is_empty() {
         return Err("请输入问题".to_string());
     }
+
+    let conversation =
+        ensure_conversation(&state, &library_id, conversation_id.as_deref(), &question)?;
+    let _ = channel.send(ChatEvent::Conversation {
+        id: conversation.id.clone(),
+        title: conversation.title.clone(),
+    });
+    persist_message(&state, &conversation.id, "user", &question, None)?;
 
     let response = retrieval::search(
         &state.db,
@@ -112,16 +130,18 @@ pub async fn chat_stream(
         .enumerate()
         .map(|(index, hit)| citation_from_hit(index + 1, hit))
         .collect();
-    let _ = channel.send(ChatEvent::Citations { citations });
+    let _ = channel.send(ChatEvent::Citations {
+        citations: citations.clone(),
+    });
 
     if hits.is_empty() {
+        let text = prompt::offline_answer(&[]);
+        let _ = persist_message(&state, &conversation.id, "assistant", &text, Some(&[]));
         let _ = channel.send(ChatEvent::Provider {
             provider: "none".to_string(),
             label: "离线关键词模式".to_string(),
         });
-        let _ = channel.send(ChatEvent::Delta {
-            text: prompt::offline_answer(&[]),
-        });
+        let _ = channel.send(ChatEvent::Delta { text });
         let _ = channel.send(ChatEvent::Done {
             provider: "none".to_string(),
         });
@@ -162,13 +182,19 @@ pub async fn chat_stream(
                 }
             }
 
+            let text = prompt::offline_answer(&hits);
+            let _ = persist_message(
+                &state,
+                &conversation.id,
+                "assistant",
+                &text,
+                Some(&citations),
+            );
             let _ = channel.send(ChatEvent::Provider {
                 provider: "none".to_string(),
                 label: "离线关键词模式".to_string(),
             });
-            let _ = channel.send(ChatEvent::Delta {
-                text: prompt::offline_answer(&hits),
-            });
+            let _ = channel.send(ChatEvent::Delta { text });
             let _ = channel.send(ChatEvent::Done {
                 provider: "none".to_string(),
             });
@@ -192,14 +218,19 @@ pub async fn chat_stream(
 
         let (sink, mut receiver) = tokio::sync::mpsc::unbounded_channel::<ProviderEvent>();
         let emitted = Arc::new(AtomicBool::new(false));
+        let collected = Arc::new(Mutex::new(String::new()));
         let forward_channel = channel.clone();
         let forward_emitted = Arc::clone(&emitted);
+        let forward_collected = Arc::clone(&collected);
         let forward = tauri::async_runtime::spawn(async move {
             while let Some(ProviderEvent::Delta(text)) = receiver.recv().await {
                 if text.is_empty() {
                     continue;
                 }
                 forward_emitted.store(true, Ordering::Relaxed);
+                if let Ok(mut buffer) = forward_collected.lock() {
+                    buffer.push_str(&text);
+                }
                 let _ = forward_channel.send(ChatEvent::Delta { text });
             }
         });
@@ -214,6 +245,19 @@ pub async fn chat_stream(
 
         match result {
             Ok(()) => {
+                let answer = collected
+                    .lock()
+                    .map(|buffer| buffer.clone())
+                    .unwrap_or_default();
+                if !answer.trim().is_empty() {
+                    let _ = persist_message(
+                        &state,
+                        &conversation.id,
+                        "assistant",
+                        &answer,
+                        Some(&citations),
+                    );
+                }
                 let _ = channel.send(ChatEvent::Done {
                     provider: candidate.as_str().to_string(),
                 });
@@ -275,6 +319,8 @@ pub struct ChatAnswer {
     pub answer: String,
     /// 引用列表。
     pub citations: Vec<Citation>,
+    /// 会话 ID（便于继续追问）。
+    pub conversation_id: String,
 }
 
 /// 非流式问答：内部走与流式相同的检索、Prompt 与 Provider 降级链路。
@@ -287,11 +333,16 @@ pub async fn chat_complete(
     state: State<'_, AppState>,
     library_id: String,
     question: String,
+    conversation_id: Option<String>,
 ) -> Result<ChatAnswer, String> {
     let question = question.trim().to_string();
     if question.is_empty() {
         return Err("请输入问题".to_string());
     }
+
+    let conversation =
+        ensure_conversation(&state, &library_id, conversation_id.as_deref(), &question)?;
+    persist_message(&state, &conversation.id, "user", &question, None)?;
 
     let response = retrieval::search(
         &state.db,
@@ -316,11 +367,8 @@ pub async fn chat_complete(
     let order = providers::candidate_order(key_configured, ollama_available);
 
     if hits.is_empty() {
-        return Ok(ChatAnswer {
-            provider: "none".to_string(),
-            answer: prompt::offline_answer(&[]),
-            citations,
-        });
+        let answer = prompt::offline_answer(&[]);
+        return finish_answer(&state, &conversation, "none", answer, citations);
     }
 
     let context = prompt::build_context(&hits);
@@ -328,11 +376,8 @@ pub async fn chat_complete(
 
     for candidate in order {
         if candidate == ProviderId::None {
-            return Ok(ChatAnswer {
-                provider: "none".to_string(),
-                answer: prompt::offline_answer(&hits),
-                citations,
-            });
+            let answer = prompt::offline_answer(&hits);
+            return finish_answer(&state, &conversation, "none", answer, citations);
         }
 
         let provider = providers::build_provider(&state.db, candidate)
@@ -357,22 +402,87 @@ pub async fn chat_complete(
             }
         };
         let (result, ()) = tokio::join!(worker, collect);
-        match result {
-            Ok(()) if !answer.trim().is_empty() => {
-                return Ok(ChatAnswer {
-                    provider: candidate.as_str().to_string(),
-                    answer,
-                    citations,
-                });
-            }
-            Ok(()) => continue,
-            Err(_) => continue,
+        if let Ok(()) = result
+            && !answer.trim().is_empty()
+        {
+            return finish_answer(&state, &conversation, candidate.as_str(), answer, citations);
         }
     }
 
+    let answer = prompt::offline_answer(&hits);
+    finish_answer(&state, &conversation, "none", answer, citations)
+}
+
+/// 持久化助手回答并组装非流式结果。
+fn finish_answer(
+    state: &State<'_, AppState>,
+    conversation: &Conversation,
+    provider: &str,
+    answer: String,
+    citations: Vec<Citation>,
+) -> Result<ChatAnswer, String> {
+    if let Err(error) = persist_message(
+        state,
+        &conversation.id,
+        "assistant",
+        &answer,
+        Some(&citations),
+    ) {
+        eprintln!("保存助手回答失败：{error}");
+    }
     Ok(ChatAnswer {
-        provider: "none".to_string(),
-        answer: prompt::offline_answer(&hits),
+        provider: provider.to_string(),
+        answer,
         citations,
+        conversation_id: conversation.id.clone(),
     })
+}
+
+/// 获取或创建会话：传入 ID 但不存在/不属于该知识库时自动新建。
+fn ensure_conversation(
+    state: &State<'_, AppState>,
+    library_id: &str,
+    conversation_id: Option<&str>,
+    question: &str,
+) -> Result<Conversation, String> {
+    state
+        .db
+        .with_connection(|connection| {
+            if let Some(id) = conversation_id
+                && let Some(existing) = conversation_repo::get_conversation(connection, id)?
+                && existing.library_id == library_id
+            {
+                return Ok(existing);
+            }
+            conversation_repo::create_conversation(
+                connection,
+                library_id,
+                &conversation_repo::title_from_question(question),
+            )
+        })
+        .map_err(|error| error.user_message())
+}
+
+/// 追加一条消息（失败时返回错误字符串）。
+fn persist_message(
+    state: &State<'_, AppState>,
+    conversation_id: &str,
+    role: &str,
+    content: &str,
+    citations: Option<&[Citation]>,
+) -> Result<(), String> {
+    let citations_json = citations.map(|items| serde_json::to_string(items).unwrap_or_default());
+    state
+        .db
+        .with_connection(|connection| {
+            conversation_repo::append_message(
+                connection,
+                conversation_id,
+                role,
+                content,
+                citations_json.as_deref(),
+            )
+        })
+        .map(|_| ())
+        .map_err(|error| error.user_message())
 }

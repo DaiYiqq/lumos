@@ -19,6 +19,24 @@ pub struct AppInfo {
     pub platform: String,
 }
 
+/// 在系统文件管理器中打开应用数据目录。
+///
+/// # Errors
+///
+/// 无法解析数据目录或无法调起系统文件管理器时返回错误。
+#[tauri::command]
+pub fn open_data_dir(app: AppHandle) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+
+    let data_dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|error| format!("无法定位应用数据目录：{error}"))?;
+    app.opener()
+        .open_path(data_dir.to_string_lossy().to_string(), None::<&str>)
+        .map_err(|error| format!("无法打开数据目录：{error}"))
+}
+
 /// 读取应用元信息。
 ///
 /// # Errors

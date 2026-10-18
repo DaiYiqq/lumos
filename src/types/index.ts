@@ -113,5 +113,124 @@ export interface IngestProgress {
   message: string | null;
 }
 
+/** 一次对话（会话）。 */
+export interface Conversation {
+  /** 会话 UUID。 */
+  id: string;
+  /** 所属知识库。 */
+  libraryId: string;
+  /** 标题。 */
+  title: string;
+  /** 创建时间。 */
+  createdAt: string;
+  /** 最后更新时间。 */
+  updatedAt: string;
+}
+
+/** 会话列表项。 */
+export interface ConversationSummary extends Conversation {
+  /** 消息条数。 */
+  messageCount: number;
+}
+
+/** 持久化的消息角色。 */
+export type MessageRole = "user" | "assistant" | "system";
+
+/** 持久化的消息。 */
+export interface StoredMessage {
+  /** 消息 UUID。 */
+  id: string;
+  /** 所属会话。 */
+  conversationId: string;
+  /** 角色。 */
+  role: MessageRole;
+  /** 正文。 */
+  content: string;
+  /** 引用 JSON（助手消息才有）。 */
+  citationsJson: string | null;
+  /** 创建时间。 */
+  createdAt: string;
+}
+
+/** 会话详情。 */
+export interface ConversationDetail {
+  /** 会话信息。 */
+  conversation: Conversation;
+  /** 消息列表。 */
+  messages: StoredMessage[];
+}
+
+/** 与回答一一对应的引用。 */
+export interface Citation {
+  /** 编号（与正文 `[n]` 对应）。 */
+  index: number;
+  /** 分块 ID。 */
+  chunkId: number;
+  /** 文档 ID。 */
+  documentId: string;
+  /** 文档标题。 */
+  documentTitle: string;
+  /** 文档路径。 */
+  documentPath: string;
+  /** 页码。 */
+  pageNo: number | null;
+  /** 章节路径。 */
+  sectionPath: string | null;
+  /** 原文片段。 */
+  content: string;
+  /** 融合检索分数。 */
+  score: number;
+}
+
+/** 问答流式事件（与 Rust `ChatEvent` 对应）。 */
+export type ChatEvent =
+  | { type: "conversation"; id: string; title: string }
+  | { type: "provider"; provider: string; label: string }
+  | { type: "notice"; message: string }
+  | { type: "citations"; citations: Citation[] }
+  | { type: "delta"; text: string }
+  | { type: "done"; provider: string }
+  | { type: "error"; message: string };
+
+/** API Key 状态。 */
+export interface ApiKeyStatus {
+  /** 是否已配置。 */
+  configured: boolean;
+  /** 来源：keyring / environment / none。 */
+  source: string;
+}
+
+/** Provider 状态。 */
+export interface ProviderStatus {
+  /** deepseek / ollama / none。 */
+  id: string;
+  /** 是否可用。 */
+  available: boolean;
+  /** 是否会被自动选中。 */
+  selected: boolean;
+  /** 说明。 */
+  detail: string;
+}
+
+/** Provider 探测结果。 */
+export interface ProviderDetection {
+  /** 三个 Provider 的状态。 */
+  statuses: ProviderStatus[];
+  /** 自动选择结果。 */
+  selected: string;
+}
+
+/** 本地嵌入服务状态。 */
+export interface EmbeddingStatus {
+  /** loading / ready / failed。 */
+  state: string;
+  /** 模型标识。 */
+  model: string;
+  /** 维度。 */
+  dimension: number;
+  /** 失败原因。 */
+  message: string | null;
+}
+
 /** 深浅色主题模式。 */
 export type ThemeMode = "system" | "light" | "dark";

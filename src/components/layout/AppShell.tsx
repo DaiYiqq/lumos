@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { ChatView } from "@/components/chat/ChatView";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -6,11 +6,12 @@ import { StatusBar } from "@/components/layout/StatusBar";
 import { LibraryView } from "@/components/library/LibraryView";
 import { SettingsView } from "@/components/settings/SettingsView";
 import { useAppInfoStore } from "@/stores/appInfo";
-import type { AppView } from "@/types";
+import { useUiStore } from "@/stores/ui";
 
 /** 应用外壳：左侧导航 + 内容区 + 底部状态栏。 */
 export function AppShell() {
-  const [view, setView] = useState<AppView>("library");
+  const activeView = useUiStore((state) => state.activeView);
+  const setActiveView = useUiStore((state) => state.setActiveView);
   const loadAppInfo = useAppInfoStore((state) => state.load);
 
   useEffect(() => {
@@ -19,12 +20,12 @@ export function AppShell() {
 
   return (
     <div className="bg-canvas text-ink flex h-full overflow-hidden">
-      <Sidebar activeView={view} onSelect={setView} />
+      <Sidebar activeView={activeView} onSelect={setActiveView} />
       <main className="flex min-w-0 flex-1 flex-col">
-        <div className="lumos-aurora flex-1 overflow-y-auto">
-          {view === "library" ? <LibraryView /> : null}
-          {view === "chat" ? <ChatView /> : null}
-          {view === "settings" ? <SettingsView /> : null}
+        <div className="lumos-aurora flex min-h-0 flex-1 flex-col overflow-hidden">
+          {activeView === "library" ? <LibraryView /> : null}
+          {activeView === "chat" ? <ChatView /> : null}
+          {activeView === "settings" ? <SettingsView /> : null}
         </div>
         <StatusBar />
       </main>

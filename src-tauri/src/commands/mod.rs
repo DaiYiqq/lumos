@@ -2,6 +2,7 @@
 
 pub mod app;
 pub mod chat;
+pub mod conversations;
 pub mod ingest;
 pub mod libraries;
 pub mod providers;

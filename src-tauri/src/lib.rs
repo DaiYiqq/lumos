@@ -90,6 +90,12 @@ pub fn run() {
             commands::providers::settings_set,
             commands::chat::chat_stream,
             commands::chat::chat_complete,
+            commands::conversations::conversation_list,
+            commands::conversations::conversation_create,
+            commands::conversations::conversation_get,
+            commands::conversations::conversation_rename,
+            commands::conversations::conversation_delete,
+            commands::app::open_data_dir,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
