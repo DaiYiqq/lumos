@@ -146,7 +146,7 @@ Benchmarked on a 24-document mixed corpus with 16 Chinese queries (recall@3, see
 - ✅ P5 — chat UI with streaming answers, clickable citations and conversation history
 - ✅ P6 — polish: logging, file watcher, data export, error boundary, virtual list, dark theme
 - ✅ P7 — bilingual UI (zh/en), documentation, CI and release workflows
-- 📋 P8 — first public release (signed installers for Windows/macOS/Linux)
+- ✅ P8 — first public release: Windows (x64/arm64), macOS Apple Silicon, Linux x64 installers
 
 ## Documentation
 
