@@ -34,3 +34,82 @@ pub struct LibrarySummary {
     /// 文档体积总和（字节）。
     pub size_bytes: i64,
 }
+
+/// 文档处理状态。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DocumentStatus {
+    /// 已入库、等待解析。
+    Pending,
+    /// 正在解析/分块。
+    Indexing,
+    /// 可被检索。
+    Ready,
+    /// 解析失败。
+    Failed,
+}
+
+impl DocumentStatus {
+    /// 数据库存储值。
+    #[must_use]
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Pending => "pending",
+            Self::Indexing => "indexing",
+            Self::Ready => "ready",
+            Self::Failed => "failed",
+        }
+    }
+}
+
+/// 文档列表项（含分块数）。
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DocumentSummary {
+    /// 文档 UUID。
+    pub id: String,
+    /// 所属知识库。
+    pub library_id: String,
+    /// 原始文件绝对路径。
+    pub path: String,
+    /// 展示用标题。
+    pub title: String,
+    /// MIME 类型。
+    pub mime: String,
+    /// 文件大小（字节）。
+    pub size: i64,
+    /// PDF 页数；非 PDF 为 null。
+    pub page_count: Option<i64>,
+    /// 处理状态。
+    pub status: String,
+    /// 失败原因（面向用户）。
+    pub error_msg: Option<String>,
+    /// 创建时间。
+    pub created_at: String,
+    /// 最后更新时间。
+    pub updated_at: String,
+    /// 分块数量。
+    pub chunk_count: i64,
+}
+
+/// 摄取任务状态。
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IngestJob {
+    /// 任务 UUID。
+    pub id: String,
+    /// 所属知识库。
+    pub library_id: String,
+    /// 待处理文件路径。
+    pub path: String,
+    /// pending / running / done / failed / cancelled。
+    pub status: String,
+    /// 处理完成的分块数（或跳过的文件为 0）。
+    pub chunk_count: i64,
+    /// 结果说明（成功/失败/跳过原因）。
+    pub message: Option<String>,
+    /// 创建时间。
+    pub created_at: String,
+    /// 最后更新时间。
+    pub updated_at: String,
+}

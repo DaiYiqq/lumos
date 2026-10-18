@@ -8,6 +8,9 @@ const listLibraries = vi.fn();
 const createLibrary = vi.fn();
 const renameLibrary = vi.fn();
 const deleteLibrary = vi.fn();
+const listDocuments = vi.fn();
+const listIngestJobs = vi.fn();
+const getIngestQueueState = vi.fn();
 
 vi.mock("@/lib/tauri", () => ({
   isTauriRuntime: () => true,
@@ -22,6 +25,22 @@ vi.mock("@/lib/tauri", () => ({
   createLibrary: (...args: unknown[]) => createLibrary(...args),
   renameLibrary: (...args: unknown[]) => renameLibrary(...args),
   deleteLibrary: (...args: unknown[]) => deleteLibrary(...args),
+  listDocuments: (...args: unknown[]) => listDocuments(...args),
+  listIngestJobs: (...args: unknown[]) => listIngestJobs(...args),
+  getIngestQueueState: (...args: unknown[]) => getIngestQueueState(...args),
+  importPaths: vi.fn().mockResolvedValue(0),
+  pauseIngestQueue: vi.fn().mockResolvedValue(true),
+  resumeIngestQueue: vi.fn().mockResolvedValue(false),
+  cancelIngestJob: vi.fn().mockResolvedValue(undefined),
+  deleteDocument: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@tauri-apps/plugin-dialog", () => ({
+  open: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@tauri-apps/api/event", () => ({
+  listen: vi.fn().mockResolvedValue(() => undefined),
 }));
 
 beforeEach(() => {
@@ -29,6 +48,9 @@ beforeEach(() => {
   createLibrary.mockReset();
   renameLibrary.mockReset();
   deleteLibrary.mockReset();
+  listDocuments.mockReset().mockResolvedValue([]);
+  listIngestJobs.mockReset().mockResolvedValue([]);
+  getIngestQueueState.mockReset().mockResolvedValue(false);
 });
 
 describe("AppShell", () => {
@@ -152,5 +174,47 @@ describe("知识库", () => {
 
     expect(await screen.findByRole("heading", { name: "还没有知识库" })).toBeInTheDocument();
     expect(deleteLibrary).toHaveBeenCalledWith("lib-1");
+  });
+
+  it("打开知识库后展示文档列表", async () => {
+    const user = userEvent.setup();
+    listLibraries.mockResolvedValue([
+      {
+        id: "lib-1",
+        name: "论文库",
+        createdAt: "2026-10-18T00:00:00.000Z",
+        updatedAt: "2026-10-18T00:00:00.000Z",
+        embeddingModel: "BAAI/bge-small-zh-v1.5",
+        chunkConfig: "{}",
+        documentCount: 1,
+        chunkCount: 12,
+        sizeBytes: 2048,
+      },
+    ]);
+    listDocuments.mockResolvedValue([
+      {
+        id: "doc-1",
+        libraryId: "lib-1",
+        path: "/papers/contrastive.pdf",
+        title: "对比学习综述",
+        mime: "application/pdf",
+        size: 2048,
+        pageCount: 12,
+        status: "ready",
+        errorMsg: null,
+        createdAt: "2026-10-18T00:00:00.000Z",
+        updatedAt: "2026-10-18T00:00:00.000Z",
+        chunkCount: 12,
+      },
+    ]);
+
+    render(<App />);
+    await screen.findByRole("heading", { name: "论文库" });
+
+    await user.click(screen.getByRole("button", { name: /^论文库/ }));
+
+    expect(await screen.findByText("对比学习综述")).toBeInTheDocument();
+    expect(screen.getByText("已就绪")).toBeInTheDocument();
+    expect(listDocuments).toHaveBeenCalledWith("lib-1");
   });
 });

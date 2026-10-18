@@ -11,10 +11,16 @@ struct Migration {
 }
 
 /// 全部迁移，按版本号升序排列。
-const MIGRATIONS: &[Migration] = &[Migration {
-    version: 1,
-    sql: include_str!("../../migrations/0001_init.sql"),
-}];
+const MIGRATIONS: &[Migration] = &[
+    Migration {
+        version: 1,
+        sql: include_str!("../../migrations/0001_init.sql"),
+    },
+    Migration {
+        version: 2,
+        sql: include_str!("../../migrations/0002_ingest_jobs.sql"),
+    },
+];
 
 /// 确保迁移表存在，然后依次应用未执行的迁移。
 ///

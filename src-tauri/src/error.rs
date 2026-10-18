@@ -33,6 +33,10 @@ pub enum AppError {
     /// 内部状态异常（如数据库锁中毒）。
     #[error("内部状态异常：{0}")]
     Internal(String),
+
+    /// 用户取消了任务。
+    #[error("任务已取消")]
+    Cancelled,
 }
 
 /// 库层通用返回值。
@@ -53,6 +57,7 @@ impl AppError {
             Self::LibraryNotFound => "找不到对应的知识库，可能已被删除".to_string(),
             Self::DuplicateLibraryName => "已存在同名知识库，请换一个名字".to_string(),
             Self::Internal(_) => "应用内部状态异常，请重启 Lumos 后重试".to_string(),
+            Self::Cancelled => "任务已取消".to_string(),
         }
     }
 }

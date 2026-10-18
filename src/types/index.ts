@@ -43,5 +43,75 @@ export interface LibrarySummary extends Library {
   sizeBytes: number;
 }
 
+/** 文档处理状态。 */
+export type DocumentStatus = "pending" | "indexing" | "ready" | "failed";
+
+/** 文档列表项。 */
+export interface DocumentSummary {
+  /** 文档 UUID。 */
+  id: string;
+  /** 所属知识库。 */
+  libraryId: string;
+  /** 原始文件绝对路径。 */
+  path: string;
+  /** 展示标题。 */
+  title: string;
+  /** MIME 类型。 */
+  mime: string;
+  /** 文件大小（字节）。 */
+  size: number;
+  /** 页数（仅 PDF）。 */
+  pageCount: number | null;
+  /** 处理状态。 */
+  status: DocumentStatus;
+  /** 失败原因。 */
+  errorMsg: string | null;
+  /** 创建时间。 */
+  createdAt: string;
+  /** 最后更新时间。 */
+  updatedAt: string;
+  /** 分块数量。 */
+  chunkCount: number;
+}
+
+/** 导入任务状态。 */
+export type IngestJobStatus = "pending" | "running" | "done" | "failed" | "cancelled";
+
+/** 导入任务。 */
+export interface IngestJob {
+  /** 任务 UUID。 */
+  id: string;
+  /** 所属知识库。 */
+  libraryId: string;
+  /** 文件路径。 */
+  path: string;
+  /** 任务状态。 */
+  status: IngestJobStatus;
+  /** 已写入分块数。 */
+  chunkCount: number;
+  /** 结果说明。 */
+  message: string | null;
+  /** 创建时间。 */
+  createdAt: string;
+  /** 最后更新时间。 */
+  updatedAt: string;
+}
+
+/** 摄取进度事件（后端通过 `ingest://progress` 推送）。 */
+export interface IngestProgress {
+  /** 任务 ID。 */
+  jobId: string;
+  /** 知识库 ID。 */
+  libraryId: string;
+  /** 文件路径。 */
+  path: string;
+  /** 任务状态。 */
+  status: IngestJobStatus;
+  /** 已写入分块数。 */
+  chunkCount: number;
+  /** 结果说明。 */
+  message: string | null;
+}
+
 /** 深浅色主题模式。 */
 export type ThemeMode = "system" | "light" | "dark";

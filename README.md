@@ -8,8 +8,10 @@ to the exact spot. Indexes, vectors and chat history live in a single SQLite fil
 
 **本地优先的个人知识库：把你的 PDF、EPUB、Word、Markdown、网页和纯文本全部喂进去，用 AI 提问，每个回答都标注可点击的引用来源。**
 
-> Current status: early development (scaffold + icons + CI in progress). The roadmap below tracks
-> what actually works today — this README is intentionally honest until the first release.
+> Current status: P0–P2 complete — app shell, SQLite data layer, and the document ingestion
+> pipeline (parse → chunk → persist, with a persistent pause/resume queue) are working and covered
+> by tests. Retrieval, AI providers and the full chat UI are next. The roadmap below tracks what
+> actually works today — this README stays honest until the first release.
 
 ## Why Lumos
 
@@ -53,9 +55,9 @@ pnpm tauri build --bundles nsis   # Windows installer (use dmg/appimage/deb on o
 ## Roadmap
 
 - ✅ P0 — environment check, scaffold, brand icon
-- 🚧 P1 — SQLite schema, migrations, library CRUD
-- 📋 P2 — ingestion: parse → chunk → embed → queue
-- 📋 P3 — hybrid retrieval (vector + BM25 + RRF)
+- ✅ P1 — SQLite schema, migrations, library CRUD
+- ✅ P2 — ingestion: parse → chunk → persist, persistent pause/resume queue
+- 🚧 P3 — hybrid retrieval (vector + BM25 + RRF)
 - 📋 P4 — providers: DeepSeek / Ollama / offline fallback with streaming
 - 📋 P5 — full UI with clickable citations
 - 📋 P6 — polish: themes, i18n, performance, accessibility

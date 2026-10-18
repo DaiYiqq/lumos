@@ -1,6 +1,7 @@
 import { AlertCircle, Library, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { LibraryDetail } from "@/components/library/LibraryDetail";
 import { LibraryNameDialog } from "@/components/library/LibraryNameDialog";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -26,10 +27,17 @@ export function LibraryView() {
   const [renameTarget, setRenameTarget] = useState<LibrarySummary | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<LibrarySummary | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [openedLibraryId, setOpenedLibraryId] = useState<string | null>(null);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  const openedLibrary = items.find((item) => item.id === openedLibraryId) ?? null;
+
+  if (openedLibrary) {
+    return <LibraryDetail library={openedLibrary} onBack={() => setOpenedLibraryId(null)} />;
+  }
 
   const isEmpty = loaded && items.length === 0;
 
@@ -91,6 +99,7 @@ export function LibraryView() {
             <li key={item.id}>
               <LibraryCard
                 library={item}
+                onOpen={() => setOpenedLibraryId(item.id)}
                 onRename={() => setRenameTarget(item)}
                 onDelete={() => setDeleteTarget(item)}
               />
@@ -154,6 +163,8 @@ export function LibraryView() {
 interface LibraryCardProps {
   /** 知识库数据。 */
   library: LibrarySummary;
+  /** 打开知识库详情。 */
+  onOpen: () => void;
   /** 点击重命名。 */
   onRename: () => void;
   /** 点击删除。 */
@@ -161,9 +172,20 @@ interface LibraryCardProps {
 }
 
 /** 单个知识库卡片。 */
-function LibraryCard({ library, onRename, onDelete }: LibraryCardProps) {
+function LibraryCard({ library, onOpen, onRename, onDelete }: LibraryCardProps) {
   return (
-    <article className="group border-line bg-surface hover:border-brand/40 flex h-full flex-col rounded-xl border p-4 transition-colors">
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      className="group border-line bg-surface hover:border-brand/40 focus-visible:outline-brand flex h-full cursor-pointer flex-col rounded-xl border p-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <span className="text-brand bg-brand-soft grid size-7 shrink-0 place-items-center rounded-md">
@@ -174,10 +196,22 @@ function LibraryCard({ library, onRename, onDelete }: LibraryCardProps) {
           </h2>
         </div>
         <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
-          <IconButton label={`重命名 ${library.name}`} onClick={onRename}>
+          <IconButton
+            label={`重命名 ${library.name}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onRename();
+            }}
+          >
             <Pencil size={14} />
           </IconButton>
-          <IconButton label={`删除 ${library.name}`} onClick={onDelete}>
+          <IconButton
+            label={`删除 ${library.name}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete();
+            }}
+          >
             <Trash2 size={14} />
           </IconButton>
         </div>

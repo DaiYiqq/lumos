@@ -150,3 +150,50 @@
 ### 下一步（P2）
 
 摄取层：PDF / EPUB / DOCX / Markdown / TXT / HTML 解析 → 清洗 → 层级感知分块 → 本地嵌入 → 写入 `chunks` / `chunks_fts`；任务队列支持暂停/取消与重启续跑。
+
+---
+
+## P2 · 摄取层：解析、分块、入库、持久化任务队列
+
+**状态：已完成（2026-10-18）**
+
+### 已完成
+
+- **格式解析** `ingest/extract/`：
+  - PDF：`pdf-extract`（纯 Rust），按分页符保留页码；扫描件无文本层时返回人话错误；
+  - DOCX：自解析 zip 内 `word/document.xml`，识别 `w:pStyle` 标题样式并还原层级；
+  - EPUB：自解析 `container.xml` → OPF → spine 顺序 → 章节 XHTML，解析失败回退按文件名读取；
+  - Markdown / HTML：先统一转成 Markdown，再按 `#` 标题切章节；
+  - 纯文本 / 代码文件：单章节直接入库。
+- **层级感知分块** `ingest/chunk.rs`：512 token / 64 token 重叠，超长段落单独切片；每块保留 `page_no`、`section_path`、`char_start/char_end`、`token_count`。
+- **入库流水线** `ingest/pipeline.rs`：SHA-256 内容哈希做增量索引（重复内容跳过）；解析失败不破坏已有文档；文档 + 全部分块在同一事务中原子写入。
+- **持久化队列** `ingest/queue.rs` + `ingest_jobs` 迁移：任务落库，串行后台消费；支持全局暂停（文件之间生效）、单任务取消；启动时把 `running` 重置为 `pending` 并自动续跑；每完成一个文件通过 `ingest://progress` 事件通知前端。
+- **前端**：知识库详情页（导入文件 / 导入文件夹、实时进度条、暂停/恢复/取消、文档列表、状态徽标、删除文档）；文件夹导入用 `walkdir` 递归展开并过滤支持格式。
+
+### 验收记录（实际运行结果）
+
+| 检查项                                       | 结果                                                                                                                                                 |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cargo test`                                 | **25 passed, 0 failed**，其中包含：100 篇 Markdown 批量索引 + 统计校验、DOCX/EPUB/HTML 三种 fixture 解析、增量索引跳过、空文件人话报错、任务重启重置 |
+| `cargo clippy --all-targets -- -D warnings`  | 退出码 0，零警告                                                                                                                                     |
+| `pnpm typecheck` / `pnpm lint` / `pnpm test` | 通过；前端 **7 passed**（含打开知识库详情、文档列表渲染）                                                                                            |
+| 真实应用 E2E（batch1）                       | 导入 7 个文件（md / txt / docx / epub / html / pdf），全部 `ready`，共 10 个分块                                                                     |
+| 真实应用 E2E（暂停）                         | `ingest_pause` 后导入 batch2，3 个任务保持 `pending`，文档数停在 7                                                                                   |
+| 真实应用 E2E（重启续跑）                     | 关闭进程再启动，队列自动续跑，最终 10 篇文档 / 13 个分块全部就绪；截图 `docs/assets/p2-window.png`                                                   |
+
+### 与任务书的偏差（已在下方说明原因）
+
+- **嵌入尚未接入**：P2 先打通「解析 → 分块 → 入库」，向量化放到 P3 与 sqlite-vec / 混合检索一起落地。原因：嵌入模型选型与 `chunks_vec` 表结构必须在检索侧一起验证，提前写会反复改写入路径。
+- **文件监听（notify）尚未接入**：依赖已加入，监听逻辑放到 P6 打磨阶段统一做（增删文件的增量同步涉及与队列、删除策略的配合）。
+
+### 踩坑记录
+
+1. **quick-xml 0.42 API 变化较大**：`BytesText::unescape/decode` 被移除，文本内容改用 `xml10_content()` 并手动处理常见实体；属性用 `normalized_value(XmlVersion::Implicit1_0)`；`local_name().as_ref()` 返回 `&str` 而不是字节切片。
+2. **EPUB 章节路径必须相对 OPF 所在目录解析**：manifest 里的 `href="chapter1.xhtml"` 在 zip 内实际是 `OEBPS/chapter1.xhtml`，直接按 href 读取会静默跳过所有章节。
+3. **DOCX 的 `<w:pStyle/>` 通常是自闭合空元素**：只匹配 `Event::Start` 会拿不到标题样式，必须同时处理 `Event::Empty`。
+4. **`zip` crate 9.x 的 `file_names()` 返回 `Result<Cow<str>>` 迭代器**，需要先 `filter_map(Result::ok)`。
+5. **Windows 控制台按 GBK 显示 Rust 测试输出**，中文断言失败信息会显示成乱码——是终端编码问题，不是数据问题（后续日志统一写 UTF-8 文件）。
+
+### 下一步（P3）
+
+检索层：sqlite-vec 向量表 + 本地嵌入（fastembed）+ BM25（FTS5）→ RRF 融合；对比单一检索与混合检索效果并记录数据。
