@@ -24,6 +24,10 @@ const MIGRATIONS: &[Migration] = &[
         version: 3,
         sql: include_str!("../../migrations/0003_chunks_vec.sql"),
     },
+    Migration {
+        version: 4,
+        sql: include_str!("../../migrations/0004_settings.sql"),
+    },
 ];
 
 /// 确保迁移表存在，然后依次应用未执行的迁移。

@@ -8,7 +8,9 @@ pub mod db;
 pub mod embedding;
 pub mod error;
 pub mod ingest;
+pub mod providers;
 pub mod retrieval;
+pub mod security;
 pub mod state;
 
 use std::sync::Arc;
@@ -80,6 +82,14 @@ pub fn run() {
             commands::retrieval::search_chunks,
             commands::retrieval::embedding_status,
             commands::retrieval::embedding_backfill,
+            commands::providers::api_key_status,
+            commands::providers::api_key_set,
+            commands::providers::api_key_clear,
+            commands::providers::providers_detect,
+            commands::providers::settings_get,
+            commands::providers::settings_set,
+            commands::chat::chat_stream,
+            commands::chat::chat_complete,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

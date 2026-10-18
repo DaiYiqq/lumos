@@ -246,3 +246,50 @@
 ### 下一步（P4）
 
 Provider 层：`deepseek` / `ollama` / `none` 三种实现 + 运行期自动降级 + 流式输出；Key 存入系统凭据库，禁止明文落盘。
+
+---
+
+## P4 · Provider 层：DeepSeek / Ollama / 离线降级 + 流式输出
+
+**状态：已完成（2026-10-18）**
+
+### 已完成
+
+- **Provider 抽象** `providers/`：
+  - `LlmProvider` trait（`id` / `is_available` / `stream_chat`），错误按鉴权 / 限流 / 网络 / 模型不存在 / 解析失败分类；
+  - **DeepSeek**：`POST {base}/chat/completions` SSE 流式解析，支持 `DEEPSEEK_BASE_URL` / `DEEPSEEK_MODEL` 覆盖（便于测试与代理）；
+  - **Ollama**：`POST {base}/api/chat` NDJSON 流式解析 + `/api/tags` 健康检查，地址与模型可在设置页修改；
+  - **none**：不进行生成，直接返回关键词检索片段（离线兜底，永远可用）；
+  - 自动顺序固定为 `deepseek → ollama → none`，每次切换都通过事件通知前端，不静默切换。
+- **RAG Prompt** `providers/prompt.rs`：强制「只依据参考资料、每个结论标注 [编号]、无依据时明确说未找到」，并生成编号与检索片段一一对应的上下文。
+- **凭据安全** `security.rs`：API Key 存 Windows 凭据管理器（macOS Keychain / Linux Secret Service），开发场景可用 `DEEPSEEK_API_KEY` 环境变量注入；**不写数据库、不写配置文件、不进日志**。
+- **设置**：迁移 0004 `settings` 键值表 + 白名单命令，保存 Ollama 地址、模型名等非敏感配置。
+- **命令层**：`chat_stream`（Tauri Channel 推送 `provider / notice / citations / delta / done / error` 事件）、`chat_complete`（非流式诊断入口）、`api_key_set/status/clear`、`providers_detect`、`settings_get/set`。
+
+### 验收记录（实际运行结果）
+
+| 检查项 | 结果 |
+| --- | --- |
+| `cargo test` | 全部通过（含 SSE/NDJSON 解析、错误分类、Provider 顺序、Prompt 引用编号） |
+| `cargo clippy --all-targets -- -D warnings` | 零警告 |
+| **DeepSeek 真实链路** | 真实 API Key（仅通过进程环境变量注入）：`provider=deepseek`，6 条引用，回答「违约金上限为合同总额的百分之二十 [1]」 |
+| **none 离线链路** | 无 Key 无 Ollama：`provider=none`，返回 6 条带编号原文片段，明确提示「离线关键词模式」 |
+| **Ollama 协议链路** | 本地 mock NDJSON 服务：`provider=ollama`，流式收到「离线本地模型流式正常」，引用正常 |
+| 密钥泄露扫描 | 仓库与构建日志中均无 API Key 字符串 |
+
+### 踩坑记录
+
+1. **`keyring` 4.x 的 feature 名变了**：不是 `windows-native` 而是 `windows-native-keyring-store`；直接用默认 features 即可。
+2. **`chat_stream` 的 Channel 需要先转发再返回**：Provider 的 sink 在 `spawn_blocking/async` 里推送，必须用独立转发任务消费 `mpsc`，否则 `Done` 事件会早于最后一段文本。
+3. **检索返回的是 `SearchResponse` 而不是 `Vec<SearchHit>`**：命令层要取 `.hits`，否则编译期类型不匹配。
+4. **Provider 失败可能发生在已经输出部分 token 之后**：只有在「尚未输出任何增量」时才自动降级，否则发出错误事件，避免把两个模型的回答拼接在一起。
+
+### 与任务书的偏差（如实记录验证边界）
+
+- **Ollama 使用本地 mock 服务验证协议与降级链路**：没有在本机拉取真实 Ollama 模型（体积 400MB+，且会占用用户磁盘）。真实 Ollama 模型端到端验证留到 P5/P6，或在用户已有模型时补测。
+- **对话历史持久化在 P5 与聊天 UI 一起实现**：P4 的 `chat_stream` 已支持传入历史消息，但尚未写入 `conversations/messages` 表。
+- API Key 只通过环境变量用于本次验收，**没有写入系统凭据库**；`api_key_set` 命令与凭据库读写路径已实现，建议用户首次使用时在设置页保存。
+
+### 下一步（P5）
+
+前端问答界面：流式打字机、Markdown 渲染、`[n]` 引用可点击跳转、右侧原文面板、对话历史持久化与三个核心场景端到端跑通。

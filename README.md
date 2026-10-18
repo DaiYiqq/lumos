@@ -59,7 +59,8 @@ pnpm tauri build --bundles nsis   # Windows installer (use dmg/appimage/deb on o
 - ✅ P1 — SQLite schema, migrations, library CRUD
 - ✅ P2 — ingestion: parse → chunk → persist, persistent pause/resume queue
 - ✅ P3 — hybrid retrieval: sqlite-vec + BGE embeddings + BM25 → RRF
-- 🚧 P4 — providers: DeepSeek / Ollama / offline fallback with streaming
+- ✅ P4 — providers: DeepSeek / Ollama / offline fallback with streaming, keys in OS keychain
+- 🚧 P5 — full chat UI with clickable citations
 - 📋 P5 — full UI with clickable citations
 - 📋 P6 — polish: themes, i18n, performance, accessibility
 - 📋 P7 — docs, README polish, demo GIF, CI/release workflows

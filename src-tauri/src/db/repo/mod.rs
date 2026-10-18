@@ -4,3 +4,4 @@ pub mod chunks;
 pub mod documents;
 pub mod jobs;
 pub mod libraries;
+pub mod settings;
