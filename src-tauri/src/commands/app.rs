@@ -80,7 +80,7 @@ fn shorten_home(path: &std::path::Path, home: Option<&std::path::Path>) -> Strin
 #[cfg(test)]
 mod tests {
     use super::shorten_home;
-    use std::path::{Path, MAIN_SEPARATOR};
+    use std::path::{MAIN_SEPARATOR, Path};
 
     #[test]
     fn replaces_home_prefix_with_tilde() {
