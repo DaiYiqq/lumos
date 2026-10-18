@@ -482,3 +482,44 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 - 9 个 commit，工作区干净；版本库无密钥/无个人文档。
 - 前端 9 tests、Rust 48 tests（2 ignored）、clippy/fmt/lint/typecheck 全绿。
 - 产品主链路已实机验证：导入 → 混合检索 → 带引用流式问答 → 点击引用回原文 → 历史/监听/导出/中英切换。
+
+---
+
+## P8 追加：README 多语言化与全平台下载入口
+
+**状态：已完成（2026-10-18 晚）**
+
+### 已完成
+
+- **README 四种语言**（顶部语言切换器互相链接）：
+  - `README.md`（English，默认）
+  - `README.zh-CN.md`（简体中文）
+  - `README.zh-TW.md`（繁體中文）
+  - `README.ja.md`（日本語）
+- **全平台下载表**：每个 README 都包含 Windows x64/arm64（NSIS + MSI）、macOS Apple Silicon（dmg）、
+  Linux x64（AppImage/deb/rpm）的**直达 Release 资产链接**，并注明「下载无需账号」。
+- **逐平台安装说明**：
+  - Windows：SmartScreen「更多信息 → 仍要运行」；
+  - macOS：拖入应用程序 + 右键打开 / 隐私与安全性放行；
+  - Linux：AppImage `chmod +x`、`apt install ./deb`、`dnf install ./rpm`，以及 WebKitGTK 依赖；
+  - 全平台源码构建命令与 Tauri 依赖链接。
+- **下载链接实测**：`releases/download/v0.1.0/...` 六个主要资产返回 206/302，可直达下载；
+  `releases/latest` 页面作为总入口。
+- **发布模板同步**：`.github/workflows/release.yml` 的 release body 现在包含下载表与四种语言链接，
+  后续 tag 自动生成带下载入口的 Release notes。
+- 当前 Release 的 notes 也通过 GitHub API 更新为同样的下载表与语言入口。
+
+### 验证
+
+| 检查项               | 结果                                                                          |
+| -------------------- | ----------------------------------------------------------------------------- |
+| 4 个 README 语言互链 | 通过                                                                          |
+| v0.1.0 资产直达链接  | 6/6 返回可下载响应（206/302）                                                 |
+| `pnpm format`        | 通过                                                                          |
+| Release 资产完整性   | 9 个资产（Windows x64/arm64 NSIS+MSI、macOS dmg/app、Linux AppImage/deb/rpm） |
+
+### 说明
+
+- “全平台”当前覆盖：Windows（x64、arm64）、macOS（Apple Silicon）、Linux（x64）。
+  macOS Intel 因 ONNX Runtime 无预编译产物暂不支持；Linux arm64 暂未提供。
+- 安装包仍未签名，README 已明确说明首次运行的系统提示与处理方式。

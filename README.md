@@ -1,10 +1,12 @@
 # Lumos
 
 **A local-first personal knowledge base that answers with traceable citations.**
-**本地优先的个人知识库：把文档喂进去，用 AI 提问，每个回答都标注可点击的引用。**
+
+[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md)
 
 [![CI](https://github.com/DaiYiqq/lumos/actions/workflows/ci.yml/badge.svg)](https://github.com/DaiYiqq/lumos/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases)
+[![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Lumos ingests PDF / EPUB / Word / Markdown / HTML / plain text and code, indexes everything locally,
@@ -12,13 +14,90 @@ and answers questions **only from your documents** — every claim carries a `[n
 back to the exact passage, page and section. Your files, embeddings and chat history stay in one
 SQLite database on your machine.
 
-> 中文简介：Lumos 是一个完全本地的个人知识库。导入 PDF、EPUB、Word、Markdown、网页或代码文件，
-> 用 DeepSeek / Ollama / 离线关键词模式提问，回答必须带引用编号，点一下就能回到原文。
-> 文档、向量与对话都保存在本机 SQLite 中，卸载前可一键备份或导出。
+## Download
 
-![Lumos demo](docs/assets/demo.gif)
+Installers are published on **GitHub Releases** — no account or sign-up is needed to download.
+Pick the file for your OS and architecture:
 
-![Lumos chat with citations](docs/assets/p5-chat.png)
+| Platform    | Architecture          | Installer                 | Direct download                                                                                                      |
+| ----------- | --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Windows** | x64                   | NSIS `.exe` (recommended) | [Lumos_0.1.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64-setup.exe)     |
+| **Windows** | x64                   | MSI                       | [Lumos_0.1.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64_en-US.msi)     |
+| **Windows** | arm64                 | NSIS `.exe`               | [Lumos_0.1.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64-setup.exe) |
+| **Windows** | arm64                 | MSI                       | [Lumos_0.1.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64_en-US.msi) |
+| **macOS**   | Apple Silicon (M1–M4) | `.dmg`                    | [Lumos_0.1.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_aarch64.dmg)         |
+| **Linux**   | x64                   | `.AppImage` (portable)    | [Lumos_0.1.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.AppImage)   |
+| **Linux**   | x64 (Debian/Ubuntu)   | `.deb`                    | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
+| **Linux**   | x64 (Fedora/RHEL)     | `.rpm`                    | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
+
+→ **All releases and checksums:** <https://github.com/DaiYiqq/lumos/releases/latest>
+
+> The current installers are **unsigned**. Windows SmartScreen and macOS Gatekeeper may show a
+> warning the first time; the steps below explain how to proceed safely.
+>
+> macOS Intel is not supported yet: the ONNX Runtime prebuilt used by the local embedding model does
+> not ship an x86_64 macOS binary.
+
+## Installation
+
+### Windows (x64 / arm64)
+
+1. Download `Lumos_0.1.0_x64-setup.exe` (most PCs) or `Lumos_0.1.0_arm64-setup.exe` (Snapdragon /
+   ARM PCs). MSI packages are available if you prefer `msiexec`.
+2. Run the installer. If SmartScreen appears, click **More info → Run anyway**.
+3. Launch **Lumos** from the Start menu. The app data directory is
+   `%APPDATA%\com.daiyi.lumos`.
+
+### macOS (Apple Silicon)
+
+1. Download `Lumos_0.1.0_aarch64.dmg` and open it.
+2. Drag **Lumos** into **Applications**.
+3. First launch: right-click the app → **Open** → **Open** (or allow it in
+   **System Settings → Privacy & Security → Open Anyway**).
+4. Data lives in `~/Library/Application Support/com.daiyi.lumos`.
+
+### Linux (x64)
+
+- **AppImage (any distro)**
+
+  ```bash
+  chmod +x Lumos_0.1.0_amd64.AppImage
+  ./Lumos_0.1.0_amd64.AppImage
+  ```
+
+- **Debian / Ubuntu**
+
+  ```bash
+  sudo apt install ./Lumos_0.1.0_amd64.deb
+  ```
+
+- **Fedora / RHEL**
+
+  ```bash
+  sudo dnf install ./Lumos-0.1.0-1.x86_64.rpm
+  ```
+
+Linux needs WebKitGTK 4.1 and an app-indicator library; on Debian/Ubuntu:
+
+```bash
+sudo apt install libwebkit2gtk-4.1-0 libayatana-appindicator3-1 librsvg2-2
+```
+
+Data lives in `~/.local/share/com.daiyi.lumos`.
+
+### Build from source (all platforms)
+
+Prerequisites: Rust ≥ 1.90 (MSVC toolchain on Windows), Node.js ≥ 22, pnpm, and the
+[Tauri system dependencies](https://tauri.app/start/prerequisites/).
+
+```bash
+node scripts/check-env.mjs   # verify toolchain versions
+pnpm install
+pnpm tauri dev               # desktop app with hot reload
+pnpm tauri build             # installers for the current platform
+```
+
+Full development, testing and troubleshooting guide: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Features
 
@@ -39,31 +118,11 @@ SQLite database on your machine.
   keyboard-friendly dialogs, error boundary, virtualized document list.
 - **Bilingual UI (中文 / English)** — switch the interface language in Settings; the choice persists.
 
+![Lumos demo](docs/assets/demo.gif)
+
+![Lumos chat with citations](docs/assets/p5-chat.png)
+
 ![Lumos dark theme](docs/assets/p6-dark.png)
-
-## Quick start
-
-### Prebuilt binaries
-
-Download the latest installer from [Releases](https://github.com/DaiYiqq/lumos/releases):
-
-- Windows: `.exe` (NSIS) — x64 and arm64
-- macOS: `.dmg` — Apple Silicon
-- Linux: `.AppImage` / `.deb`
-
-### Build from source
-
-Prerequisites: Rust ≥ 1.90 (MSVC toolchain on Windows), Node.js ≥ 22, pnpm, and the
-[Tauri system dependencies](https://tauri.app/start/prerequisites/).
-
-```bash
-node scripts/check-env.mjs   # verify toolchain versions
-pnpm install
-pnpm tauri dev               # desktop app with hot reload
-pnpm tauri build             # installers for the current platform
-```
-
-Full development, testing and troubleshooting guide: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Using Lumos
 
