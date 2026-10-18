@@ -122,3 +122,57 @@ body {
     animation: none;
   }
 }
+
+/* 代码高亮：为 highlight.js 的 token 提供深浅两套可读配色 */
+.hljs-keyword,
+.hljs-built_in,
+.hljs-type {
+  color: #7c3aed;
+}
+.hljs-string,
+.hljs-attr {
+  color: #047857;
+}
+.hljs-number,
+.hljs-literal {
+  color: #b45309;
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--lumos-ink-faint);
+  font-style: italic;
+}
+.hljs-title,
+.hljs-function,
+.hljs-section {
+  color: #1d4ed8;
+}
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params {
+  color: var(--lumos-ink);
+}
+
+.dark .hljs-keyword,
+.dark .hljs-built_in,
+.dark .hljs-type {
+  color: #c4b5fd;
+}
+.dark .hljs-string,
+.dark .hljs-attr {
+  color: #6ee7b7;
+}
+.dark .hljs-number,
+.dark .hljs-literal {
+  color: #fcd34d;
+}
+.dark .hljs-title,
+.dark .hljs-function,
+.dark .hljs-section {
+  color: #93c5fd;
+}
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-params {
+  color: var(--lumos-ink);
+}

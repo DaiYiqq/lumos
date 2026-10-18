@@ -61,7 +61,8 @@ pnpm tauri build --bundles nsis   # Windows installer (use dmg/appimage/deb on o
 - ✅ P3 — hybrid retrieval: sqlite-vec + BGE embeddings + BM25 → RRF
 - ✅ P4 — providers: DeepSeek / Ollama / offline fallback with streaming, keys in OS keychain
 - ✅ P5 — chat UI with streaming answers, clickable citations and conversation history
-- 🚧 P6 — polish: themes, i18n, performance, accessibility
+- ✅ P6 — polish: logging, file watcher, data export, error boundary, virtual list, dark theme
+- 🚧 P7 — i18n (zh/en), docs, CI and release workflows
 - 📋 P5 — full UI with clickable citations
 - 📋 P6 — polish: themes, i18n, performance, accessibility
 - 📋 P7 — docs, README polish, demo GIF, CI/release workflows

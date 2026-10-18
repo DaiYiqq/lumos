@@ -1,5 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   AlertCircle,
   ArrowLeft,
@@ -14,7 +15,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -85,6 +86,26 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
     return () => {
       disposed = true;
       if (timer) clearTimeout(timer);
+      unlisten?.();
+    };
+  }, [library.id, refresh]);
+
+  // 订阅文件监听器的变化事件：外部文件增删改后自动刷新
+  useEffect(() => {
+    if (!isTauriRuntime()) return;
+
+    let disposed = false;
+    let unlisten: (() => void) | undefined;
+    void listen<{ libraryId: string }>("library://changed", (event) => {
+      if (event.payload.libraryId !== library.id || disposed) return;
+      void refresh();
+    }).then((stop) => {
+      if (disposed) stop();
+      else unlisten = stop;
+    });
+
+    return () => {
+      disposed = true;
       unlisten?.();
     };
   }, [library.id, refresh]);
@@ -234,30 +255,99 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
             </Button>
           </EmptyState>
         ) : (
-          <ul className="border-line bg-surface divide-line divide-y overflow-hidden rounded-xl border">
-            {documents.map((document) => (
-              <li key={document.id} className="flex items-center gap-3 px-4 py-3">
-                <FileText size={16} className="text-ink-faint shrink-0" aria-hidden="true" />
-                <div className="min-w-0 flex-1">
-                  <div className="text-ink truncate text-sm font-medium">{document.title}</div>
-                  <div className="text-ink-faint mt-0.5 truncate text-[11px]" title={document.path}>
-                    {document.chunkCount} 个分块 · {formatBytes(document.size)}
-                    {document.pageCount ? ` · ${document.pageCount} 页` : ""} ·{" "}
-                    {formatDateTime(document.updatedAt)}
-                  </div>
-                </div>
-                <StatusBadge status={document.status} />
-                <IconButton
-                  label={`删除文档 ${document.title}`}
-                  onClick={() => void removeDocument(document.id)}
-                >
-                  <Trash2 size={14} />
-                </IconButton>
-              </li>
-            ))}
-          </ul>
+          <VirtualDocumentList documents={documents} onDelete={removeDocument} />
         )}
       </section>
+    </div>
+  );
+}
+
+interface VirtualDocumentListProps {
+  /** 文档列表。 */
+  documents: Array<import("@/types").DocumentSummary>;
+  /** 删除文档。 */
+  onDelete: (id: string) => Promise<void>;
+}
+
+/** 超过这个数量才启用虚拟列表（小列表直接渲染，行为更稳定）。 */
+const VIRTUALIZE_THRESHOLD = 30;
+
+/**
+ * 文档列表：小列表直接渲染，大列表用虚拟滚动，几万篇文档也不会一次性挂载 DOM。
+ */
+function VirtualDocumentList({ documents, onDelete }: VirtualDocumentListProps) {
+  const parentRef = useRef<HTMLDivElement>(null);
+  // TanStack Virtual 的 hook 返回不可 memo 化的函数，React Compiler 会跳过本组件（预期行为）。
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const virtualizer = useVirtualizer({
+    count: documents.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 60,
+    overscan: 8,
+  });
+
+  if (documents.length <= VIRTUALIZE_THRESHOLD) {
+    return (
+      <div
+        className="border-line bg-surface divide-line max-h-[60vh] divide-y overflow-y-auto rounded-xl border"
+        aria-label="文档列表"
+      >
+        {documents.map((document) => (
+          <DocumentRow key={document.id} document={document} onDelete={onDelete} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={parentRef}
+      className="border-line bg-surface max-h-[60vh] overflow-y-auto rounded-xl border"
+      aria-label="文档列表"
+    >
+      <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
+        {virtualizer.getVirtualItems().map((item) => {
+          const document = documents[item.index];
+          if (!document) return null;
+          return (
+            <div
+              key={document.id}
+              className="absolute top-0 left-0 w-full"
+              style={{ transform: `translateY(${item.start}px)` }}
+            >
+              <DocumentRow document={document} onDelete={onDelete} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+interface DocumentRowProps {
+  /** 文档数据。 */
+  document: import("@/types").DocumentSummary;
+  /** 删除回调。 */
+  onDelete: (id: string) => Promise<void>;
+}
+
+/** 文档列表中的一行。 */
+function DocumentRow({ document, onDelete }: DocumentRowProps) {
+  return (
+    <div className="border-line flex h-[60px] w-full items-center gap-3 border-b px-4">
+      <FileText size={16} className="text-ink-faint shrink-0" aria-hidden="true" />
+      <div className="min-w-0 flex-1">
+        <div className="text-ink truncate text-sm font-medium">{document.title}</div>
+        <div className="text-ink-faint mt-0.5 truncate text-[11px]" title={document.path}>
+          {document.chunkCount} 个分块 · {formatBytes(document.size)}
+          {document.pageCount ? ` · ${document.pageCount} 页` : ""} ·{" "}
+          {formatDateTime(document.updatedAt)}
+        </div>
+      </div>
+      <StatusBadge status={document.status} />
+      <IconButton label={`删除文档 ${document.title}`} onClick={() => void onDelete(document.id)}>
+        <Trash2 size={14} />
+      </IconButton>
     </div>
   );
 }

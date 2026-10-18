@@ -1,12 +1,15 @@
 import { AlertCircle, Library, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { listen } from "@tauri-apps/api/event";
+
 import { LibraryDetail } from "@/components/library/LibraryDetail";
 import { LibraryNameDialog } from "@/components/library/LibraryNameDialog";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
+import { isTauriRuntime } from "@/lib/tauri";
 import { formatBytes, formatDateTime } from "@/lib/utils";
 import { useLibrariesStore } from "@/stores/libraries";
 import type { LibrarySummary } from "@/types";
@@ -31,6 +34,23 @@ export function LibraryView() {
 
   useEffect(() => {
     void load();
+  }, [load]);
+
+  // 文件监听器触发的数据变化：刷新统计与列表
+  useEffect(() => {
+    if (!isTauriRuntime()) return;
+    let disposed = false;
+    let unlisten: (() => void) | undefined;
+    void listen("library://changed", () => {
+      if (!disposed) void load();
+    }).then((stop) => {
+      if (disposed) stop();
+      else unlisten = stop;
+    });
+    return () => {
+      disposed = true;
+      unlisten?.();
+    };
   }, [load]);
 
   const openedLibrary = items.find((item) => item.id === openedLibraryId) ?? null;

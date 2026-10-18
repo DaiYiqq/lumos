@@ -141,14 +141,12 @@ beforeEach(() => {
     ],
     selected: "none",
   });
-  api.embeddingStatus
-    .mockReset()
-    .mockResolvedValue({
-      state: "ready",
-      model: "BAAI/bge-small-zh-v1.5",
-      dimension: 512,
-      message: null,
-    });
+  api.embeddingStatus.mockReset().mockResolvedValue({
+    state: "ready",
+    model: "BAAI/bge-small-zh-v1.5",
+    dimension: 512,
+    message: null,
+  });
   api.settingsGet.mockReset().mockResolvedValue(null);
 });
 

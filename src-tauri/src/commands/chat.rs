@@ -428,7 +428,7 @@ fn finish_answer(
         &answer,
         Some(&citations),
     ) {
-        eprintln!("保存助手回答失败：{error}");
+        tracing::warn!(error = %error, "保存助手回答失败");
     }
     Ok(ChatAnswer {
         provider: provider.to_string(),

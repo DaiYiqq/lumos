@@ -83,7 +83,7 @@ pub fn ensure_model_files(cache_dir: &Path) -> AppResult<ModelFiles> {
 
     let mut last_error = String::new();
     for base in &bases {
-        eprintln!("正在从 {base} 下载本地嵌入模型（首次约 100MB）…");
+        tracing::info!(base = %base, "正在下载本地嵌入模型（首次约 100MB）");
         match download_from_base(&client, base, &model_dir) {
             Ok(()) => return Ok(model_files(&model_dir)),
             Err(error) => last_error = error.to_string(),

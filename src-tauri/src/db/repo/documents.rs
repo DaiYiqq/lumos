@@ -179,6 +179,52 @@ pub fn delete_document(connection: &Connection, document_id: &str) -> AppResult<
     Ok(())
 }
 
+/// 按路径查找文档所属的知识库。
+///
+/// # Errors
+///
+/// 数据库查询失败时返回错误。
+pub fn find_library_by_path(connection: &Connection, path: &str) -> AppResult<Option<String>> {
+    let library_id = connection
+        .query_row(
+            "SELECT library_id FROM documents WHERE path = ?1 LIMIT 1",
+            [path],
+            |row| row.get(0),
+        )
+        .optional()?;
+    Ok(library_id)
+}
+
+/// 在某个目录下寻找已索引文档所属的知识库（用于监听目录里的新文件）。
+///
+/// # Errors
+///
+/// 数据库查询失败时返回错误。
+pub fn find_library_by_directory(
+    connection: &Connection,
+    directory: &str,
+) -> AppResult<Option<String>> {
+    let prefix = format!("{}%", directory.trim_end_matches(['\\', '/']));
+    let library_id = connection
+        .query_row(
+            "SELECT library_id FROM documents WHERE path LIKE ?1 LIMIT 1",
+            [prefix],
+            |row| row.get(0),
+        )
+        .optional()?;
+    Ok(library_id)
+}
+
+/// 删除指定路径的文档（文件被删除时调用）。
+///
+/// # Errors
+///
+/// 数据库写入失败时返回错误。
+pub fn delete_document_by_path(connection: &Connection, path: &str) -> AppResult<bool> {
+    let changed = connection.execute("DELETE FROM documents WHERE path = ?1", [path])?;
+    Ok(changed > 0)
+}
+
 /// 把查询行映射为 [`DocumentSummary`]。
 fn map_document(row: &Row<'_>) -> rusqlite::Result<DocumentSummary> {
     Ok(DocumentSummary {

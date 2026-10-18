@@ -114,7 +114,7 @@ pub fn ingest_file(
         && embedder.is_ready()
         && let Err(error) = embed_document(database, embedder, &document_id)
     {
-        eprintln!("为文档 {document_id} 生成向量失败（稍后会自动补写）：{error}");
+        tracing::warn!(document_id, error = %error, "生成向量失败，稍后自动补写");
     }
 
     Ok(IngestOutcome {

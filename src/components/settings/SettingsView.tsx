@@ -1,6 +1,8 @@
 import { AlertCircle, FolderOpen, KeyRound, Loader2, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
+import { open } from "@tauri-apps/plugin-dialog";
+
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import * as tauri from "@/lib/tauri";
@@ -122,6 +124,28 @@ export function SettingsView() {
       await refresh();
     } catch (backfillError) {
       setError(describeError(backfillError));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const exportData = async (): Promise<void> => {
+    setBusy(true);
+    setNotice(null);
+    setError(null);
+    try {
+      const directory = await open({
+        directory: true,
+        multiple: false,
+        title: "选择导出目录",
+      });
+      if (!directory || Array.isArray(directory)) return;
+      const summary = await tauri.exportAll(directory);
+      setNotice(
+        `已导出 ${summary.libraries} 个知识库、${summary.documents} 篇文档、${summary.conversations} 个会话到 ${summary.root}`,
+      );
+    } catch (exportError) {
+      setError(describeError(exportError));
     } finally {
       setBusy(false);
     }
@@ -304,6 +328,19 @@ export function SettingsView() {
           >
             <FolderOpen size={14} aria-hidden="true" />
             打开数据目录
+          </Button>
+        </div>
+      </section>
+
+      <section className="border-line bg-surface mt-4 rounded-xl border p-5">
+        <h2 className="text-ink text-[14px] font-semibold">数据导出</h2>
+        <p className="text-ink-muted mt-1 text-[12px]">
+          把全部知识库、文档分块与对话导出为 Markdown + JSON，导出后不依赖 Lumos 也能阅读。
+        </p>
+        <div className="mt-3">
+          <Button variant="secondary" onClick={() => void exportData()} disabled={busy}>
+            <FolderOpen size={14} aria-hidden="true" />
+            导出全部数据
           </Button>
         </div>
       </section>

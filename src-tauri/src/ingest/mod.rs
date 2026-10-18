@@ -4,3 +4,4 @@ pub mod chunk;
 pub mod extract;
 pub mod pipeline;
 pub mod queue;
+pub mod watcher;

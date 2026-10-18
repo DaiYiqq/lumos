@@ -189,3 +189,10 @@ export async function embeddingStatus(): Promise<import("@/types").EmbeddingStat
 export async function embeddingBackfill(): Promise<number> {
   return invoke("embedding_backfill");
 }
+
+/** 导出全部数据到指定目录，返回摘要。 */
+export async function exportAll(
+  targetDir: string,
+): Promise<import("@/types/export").ExportSummary> {
+  return invoke("export_all", { targetDir });
+}

@@ -1,19 +1,21 @@
 //! Lumos 的 Tauri 运行时入口。
 //!
-//! 启动顺序：解析应用数据目录 → 打开数据库 → 执行迁移 → 启动嵌入服务与摄取队列 →
-//! 重新装载未完成任务 → 后台补写向量 → 注册全局状态与命令。
+//! 启动顺序：解析应用数据目录 → 初始化日志 → 打开数据库 → 执行迁移 →
+//! 启动嵌入服务、摄取队列与文件监听 → 重新装载未完成任务 → 后台补写向量。
 
 pub mod commands;
 pub mod db;
 pub mod embedding;
 pub mod error;
 pub mod ingest;
+pub mod logging;
 pub mod providers;
 pub mod retrieval;
 pub mod security;
 pub mod state;
 
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::Duration;
 
 use tauri::Manager;
@@ -21,6 +23,7 @@ use tauri::Manager;
 use crate::db::repo::jobs;
 use crate::embedding::EmbeddingService;
 use crate::ingest::queue::IngestQueue;
+use crate::ingest::watcher;
 
 /// 模型就绪后每次补写的分块数量。
 const BACKFILL_BATCH: usize = 64;
@@ -36,6 +39,9 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .setup(|app| {
             let data_dir = app.path().app_data_dir()?;
+            let log_guard = logging::init(&data_dir.join("logs")).ok();
+            tracing::info!(version = env!("CARGO_PKG_VERSION"), "Lumos 启动");
+
             let database = Arc::new(db::Database::open(data_dir.join("lumos.db"))?);
             database.migrate()?;
 
@@ -47,10 +53,24 @@ pub fn run() {
                 Arc::clone(&database),
                 Arc::clone(&embedder),
             );
+
+            let watcher = watcher::start(
+                app.handle().clone(),
+                Arc::clone(&database),
+                Arc::clone(&queue),
+            )
+            .map_err(|error| {
+                tracing::warn!(error = %error, "文件监听启动失败，导入功能不受影响");
+                error
+            })
+            .ok();
+
             app.manage(state::AppState {
                 db: Arc::clone(&database),
                 queue: Arc::clone(&queue),
                 embedder: Arc::clone(&embedder),
+                watcher: Mutex::new(watcher),
+                _log_guard: log_guard,
             });
 
             // 重新装载上次退出时未完成的任务
@@ -67,6 +87,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::app::app_info,
+            commands::app::open_data_dir,
             commands::libraries::library_list,
             commands::libraries::library_create,
             commands::libraries::library_rename,
@@ -95,7 +116,7 @@ pub fn run() {
             commands::conversations::conversation_get,
             commands::conversations::conversation_rename,
             commands::conversations::conversation_delete,
-            commands::app::open_data_dir,
+            commands::export::export_all,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -124,12 +145,15 @@ fn spawn_backfill(database: Arc<db::Database>, embedder: Arc<EmbeddingService>) 
 
             match result {
                 Ok(Ok(0)) => break,
-                Ok(Ok(_)) => {}
+                Ok(Ok(count)) => tracing::debug!(count, "补写向量完成一批"),
                 Ok(Err(error)) => {
-                    eprintln!("补写向量失败，稍后可手动重试：{error}");
+                    tracing::warn!(error = %error, "补写向量失败，稍后可手动重试");
                     break;
                 }
-                Err(_) => break,
+                Err(error) => {
+                    tracing::warn!(error = %error, "补写向量任务异常退出");
+                    break;
+                }
             }
 
             tokio::time::sleep(Duration::from_millis(200)).await;

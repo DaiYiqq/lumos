@@ -123,6 +123,25 @@ fn map_job(row: &Row<'_>) -> rusqlite::Result<IngestJob> {
     })
 }
 
+/// 判断某路径是否已有未完成的导入任务（避免监听器重复入队）。
+///
+/// # Errors
+///
+/// 数据库查询失败时返回错误。
+pub fn has_unfinished_job(
+    connection: &Connection,
+    library_id: &str,
+    path: &str,
+) -> AppResult<bool> {
+    let exists = connection.query_row(
+        "SELECT EXISTS(SELECT 1 FROM ingest_jobs \
+         WHERE library_id = ?1 AND path = ?2 AND status IN ('pending', 'running'))",
+        params![library_id, path],
+        |row| row.get::<_, bool>(0),
+    )?;
+    Ok(exists)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
