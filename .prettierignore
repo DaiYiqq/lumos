@@ -1,0 +1,8 @@
+dist
+node_modules
+coverage
+pnpm-lock.yaml
+src-tauri/target
+src-tauri/gen
+src-tauri/icons
+docs/assets/*.gif

@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* Tailwind v4：用 class 控制深浅色，而不是只依赖系统偏好 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans:
+    "Inter", "Segoe UI Variable", "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui,
+    sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+
+  --color-canvas: var(--lumos-canvas);
+  --color-surface: var(--lumos-surface);
+  --color-surface-raised: var(--lumos-surface-raised);
+  --color-line: var(--lumos-line);
+  --color-ink: var(--lumos-ink);
+  --color-ink-muted: var(--lumos-ink-muted);
+  --color-ink-faint: var(--lumos-ink-faint);
+  --color-brand: var(--lumos-brand);
+  --color-brand-soft: var(--lumos-brand-soft);
+  --color-brand-strong: var(--lumos-brand-strong);
+}
+
+:root {
+  --lumos-canvas: #f6f7fb;
+  --lumos-surface: #ffffff;
+  --lumos-surface-raised: #fbfbfd;
+  --lumos-line: #e3e5ee;
+  --lumos-ink: #14161f;
+  --lumos-ink-muted: #5a6072;
+  --lumos-ink-faint: #8b90a0;
+  --lumos-brand: #6d5cff;
+  --lumos-brand-soft: #ece9ff;
+  --lumos-brand-strong: #5341e8;
+  color-scheme: light;
+}
+
+.dark {
+  --lumos-canvas: #0a0b12;
+  --lumos-surface: #10111b;
+  --lumos-surface-raised: #161826;
+  --lumos-line: #232639;
+  --lumos-ink: #f2f3f8;
+  --lumos-ink-muted: #a2a7bb;
+  --lumos-ink-faint: #6f7488;
+  --lumos-brand: #8b7cff;
+  --lumos-brand-soft: #1d1b38;
+  --lumos-brand-strong: #a79bff;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--lumos-canvas);
+  color: var(--lumos-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 应用内滚动条：默认滚动条在 WebView2 里过于笨重 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--lumos-line) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 9999px;
+  background-clip: content-box;
+  background-color: var(--lumos-line);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--lumos-brand) 32%, transparent);
+}
+
+/* 品牌光晕背景，给空状态一点层次感 */
+.lumos-aurora {
+  background:
+    radial-gradient(
+      60rem 28rem at 18% -10%,
+      color-mix(in oklab, var(--lumos-brand) 18%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      48rem 24rem at 95% 4%,
+      color-mix(in oklab, #33d6c3 10%, transparent),
+      transparent 72%
+    );
+}
+
+@keyframes lumos-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lumos-fade-up {
+  animation: lumos-fade-up 240ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lumos-fade-up {
+    animation: none;
+  }
+}
