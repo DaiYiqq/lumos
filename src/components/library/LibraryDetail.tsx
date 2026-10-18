@@ -20,6 +20,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
+import { useT, useI18nStore, translate } from "@/i18n";
 import { DOCUMENT_FILTER } from "@/lib/fileTypes";
 import { isTauriRuntime, importPaths as callImportPaths } from "@/lib/tauri";
 import { formatBytes, formatDateTime } from "@/lib/utils";
@@ -50,6 +51,7 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
   const loadLibraries = useLibrariesStore((state) => state.load);
   const setActiveView = useUiStore((state) => state.setActiveView);
   const setSelectedLibraryId = useUiStore((state) => state.setSelectedLibraryId);
+  const t = useT();
 
   const [importing, setImporting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -125,11 +127,11 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
     try {
       const selection = await open(
         directory
-          ? { directory: true, multiple: false, title: "选择要导入的文件夹" }
+          ? { directory: true, multiple: false, title: t("选择要导入的文件夹") }
           : {
               multiple: true,
               directory: false,
-              title: "选择要导入的文档",
+              title: t("选择要导入的文档"),
               filters: [DOCUMENT_FILTER],
             },
       );
@@ -139,7 +141,9 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
       if (paths.length === 0) return;
 
       const created = await importPathsSafely(library.id, paths);
-      setNotice(created > 0 ? `已加入 ${created} 个导入任务` : "没有新的可导入文件");
+      setNotice(
+        created > 0 ? t("已加入 {count} 个导入任务", { count: created }) : t("没有新的可导入文件"),
+      );
       await refresh();
     } catch (importError) {
       setNotice(describeError(importError));
@@ -152,7 +156,7 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
     <div className="mx-auto w-full max-w-5xl px-8 py-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
-          <IconButton label="返回知识库列表" onClick={onBack} className="border-line border">
+          <IconButton label={t("返回知识库列表")} onClick={onBack} className="border-line border">
             <ArrowLeft size={16} />
           </IconButton>
           <div className="min-w-0">
@@ -160,15 +164,18 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
               {library.name}
             </h1>
             <p className="text-ink-muted mt-0.5 text-[12px]">
-              {library.documentCount} 篇文档 · {library.chunkCount} 个分块 · 更新于{" "}
-              {formatDateTime(library.updatedAt)}
+              {t("{docs} 篇文档 · {chunks} 个分块 · 更新于 {time}", {
+                docs: library.documentCount,
+                chunks: library.chunkCount,
+                time: formatDateTime(library.updatedAt),
+              })}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <IconButton
-            label="刷新"
+            label={t("刷新")}
             onClick={() => void refresh()}
             className="border-line h-9 w-9 border"
           >
@@ -177,7 +184,7 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
           {paused ? (
             <Button variant="secondary" onClick={() => void setPaused(false)}>
               <Play size={15} aria-hidden="true" />
-              继续导入
+              {t("继续导入")}
             </Button>
           ) : (
             <Button
@@ -186,16 +193,16 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
               disabled={!runningJob && pendingCount === 0}
             >
               <Pause size={15} aria-hidden="true" />
-              暂停
+              {t("暂停")}
             </Button>
           )}
           <Button onClick={() => void handleImport(false)} disabled={importing}>
             <Upload size={15} aria-hidden="true" />
-            导入文件
+            {t("导入文件")}
           </Button>
           <Button variant="secondary" onClick={() => void handleImport(true)} disabled={importing}>
             <FolderPlus size={15} aria-hidden="true" />
-            导入文件夹
+            {t("导入文件夹")}
           </Button>
           <Button
             onClick={() => {
@@ -204,7 +211,7 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
             }}
           >
             <MessagesSquare size={15} aria-hidden="true" />
-            去提问
+            {t("去提问")}
           </Button>
         </div>
       </header>
@@ -212,7 +219,7 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
       {notice ? (
         <div className="border-line bg-surface-raised text-ink-muted mt-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-[12px]">
           <span className="flex-1">{notice}</span>
-          <IconButton label="关闭提示" onClick={() => setNotice(null)}>
+          <IconButton label={t("关闭提示")} onClick={() => setNotice(null)}>
             <X size={13} />
           </IconButton>
         </div>
@@ -237,21 +244,26 @@ export function LibraryDetail({ library, onBack }: LibraryDetailProps) {
 
       {lastFailure ? (
         <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-700 dark:text-amber-300">
-          最近一次导入失败：{lastFailure.message ?? "未知原因"}（{basename(lastFailure.path)}）
+          {t("最近一次导入失败：{message}（{file}）", {
+            message: lastFailure.message ?? t("未知原因"),
+            file: basename(lastFailure.path),
+          })}
         </div>
       ) : null}
 
-      <section className="mt-6" aria-label="文档列表">
+      <section className="mt-6" aria-label={t("文档列表")}>
         {documents.length === 0 && !loading ? (
           <EmptyState
             className="py-20"
             icon={<FileText size={22} aria-hidden="true" />}
-            title="还没有文档"
-            description="导入 PDF、EPUB、Word、Markdown、网页或代码文件。解析与分块都在本机完成，源文件不会被移动或上传。"
+            title={t("还没有文档")}
+            description={t(
+              "导入 PDF、EPUB、Word、Markdown、网页或代码文件。解析与分块都在本机完成，源文件不会被移动或上传。",
+            )}
           >
             <Button onClick={() => void handleImport(false)}>
               <Upload size={16} aria-hidden="true" />
-              导入文件
+              {t("导入文件")}
             </Button>
           </EmptyState>
         ) : (
@@ -333,19 +345,24 @@ interface DocumentRowProps {
 
 /** 文档列表中的一行。 */
 function DocumentRow({ document, onDelete }: DocumentRowProps) {
+  const t = useT();
+
   return (
     <div className="border-line flex h-[60px] w-full items-center gap-3 border-b px-4">
       <FileText size={16} className="text-ink-faint shrink-0" aria-hidden="true" />
       <div className="min-w-0 flex-1">
         <div className="text-ink truncate text-sm font-medium">{document.title}</div>
         <div className="text-ink-faint mt-0.5 truncate text-[11px]" title={document.path}>
-          {document.chunkCount} 个分块 · {formatBytes(document.size)}
-          {document.pageCount ? ` · ${document.pageCount} 页` : ""} ·{" "}
+          {t("{count} 个分块", { count: document.chunkCount })} · {formatBytes(document.size)}
+          {document.pageCount ? ` · ${t("{pages} 页", { pages: document.pageCount })}` : ""} ·{" "}
           {formatDateTime(document.updatedAt)}
         </div>
       </div>
       <StatusBadge status={document.status} />
-      <IconButton label={`删除文档 ${document.title}`} onClick={() => void onDelete(document.id)}>
+      <IconButton
+        label={t("删除文档 {title}", { title: document.title })}
+        onClick={() => void onDelete(document.id)}
+      >
         <Trash2 size={14} />
       </IconButton>
     </div>
@@ -365,6 +382,7 @@ interface QueueBannerProps {
 
 /** 顶部进度条：当前文件 + 队列长度。 */
 function QueueBanner({ job, pendingCount, paused, onCancel }: QueueBannerProps) {
+  const t = useT();
   if (!job && pendingCount === 0) return null;
 
   return (
@@ -373,15 +391,21 @@ function QueueBanner({ job, pendingCount, paused, onCancel }: QueueBannerProps) 
         <Loader2 size={15} className="text-brand animate-spin" aria-hidden="true" />
         <div className="min-w-0 flex-1">
           <p className="text-ink truncate text-[13px] font-medium">
-            {job ? `正在解析 ${basename(job.path)}` : paused ? "导入已暂停" : "等待导入"}
+            {job
+              ? t("正在解析 {name}", { name: basename(job.path) })
+              : paused
+                ? t("导入已暂停")
+                : t("等待导入")}
           </p>
           <p className="text-ink-faint mt-0.5 text-[11px]">
-            {paused ? "恢复后会继续处理队列中的文件" : `队列中还有 ${pendingCount} 个文件`}
+            {paused
+              ? t("恢复后会继续处理队列中的文件")
+              : t("队列中还有 {count} 个文件", { count: pendingCount })}
           </p>
         </div>
         {job ? (
           <Button variant="ghost" size="sm" onClick={() => void onCancel(job.id)}>
-            取消
+            {t("取消")}
           </Button>
         ) : null}
       </div>
@@ -401,14 +425,15 @@ interface StatusBadgeProps {
 
 /** 文档状态徽标。 */
 function StatusBadge({ status }: StatusBadgeProps) {
+  const t = useT();
   const map: Record<string, { label: string; className: string }> = {
-    pending: { label: "排队中", className: "bg-surface-raised text-ink-muted" },
-    indexing: { label: "解析中", className: "bg-brand-soft text-brand" },
+    pending: { label: t("排队中"), className: "bg-surface-raised text-ink-muted" },
+    indexing: { label: t("解析中"), className: "bg-brand-soft text-brand" },
     ready: {
-      label: "已就绪",
+      label: t("已就绪"),
       className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     },
-    failed: { label: "失败", className: "bg-red-500/10 text-red-600 dark:text-red-400" },
+    failed: { label: t("失败"), className: "bg-red-500/10 text-red-600 dark:text-red-400" },
   };
   const meta = map[status] ?? { label: status, className: "bg-surface-raised text-ink-muted" };
 
@@ -434,5 +459,5 @@ function basename(path: string): string {
 function describeError(error: unknown): string {
   if (typeof error === "string" && error.trim()) return error;
   if (error instanceof Error && error.message) return error.message;
-  return "操作失败，请重试";
+  return translate(useI18nStore.getState().language, "操作失败，请重试");
 }

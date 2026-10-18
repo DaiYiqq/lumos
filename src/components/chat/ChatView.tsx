@@ -5,13 +5,14 @@ import { CitationPanel } from "@/components/chat/CitationPanel";
 import { Composer } from "@/components/chat/Composer";
 import { ConversationList } from "@/components/chat/ConversationList";
 import { MessageBubble } from "@/components/chat/MessageBubble";
+import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat";
 import { useLibrariesStore } from "@/stores/libraries";
 import { useUiStore } from "@/stores/ui";
-import { Button } from "@/components/ui/Button";
 
 /** 三个核心场景的示例问题。 */
 const STARTER_QUESTIONS = [
@@ -51,6 +52,7 @@ export function ChatView() {
 
   const [showCitations, setShowCitations] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   useEffect(() => {
     if (!librariesLoaded) void loadLibraries();
@@ -76,10 +78,12 @@ export function ChatView() {
     return (
       <EmptyState
         icon={<Sparkles size={22} aria-hidden="true" />}
-        title="先创建一个知识库"
-        description="问答基于你导入的文档。先创建知识库并导入 PDF、Word、Markdown 等文件，再回来提问。"
+        title={t("先创建一个知识库")}
+        description={t(
+          "问答基于你导入的文档。先创建知识库并导入 PDF、Word、Markdown 等文件，再回来提问。",
+        )}
       >
-        <Button onClick={() => setActiveView("library")}>去创建知识库</Button>
+        <Button onClick={() => setActiveView("library")}>{t("去创建知识库")}</Button>
       </EmptyState>
     );
   }
@@ -101,7 +105,7 @@ export function ChatView() {
           <select
             value={selectedLibraryId ?? ""}
             onChange={(event) => setSelectedLibraryId(event.currentTarget.value || null)}
-            aria-label="选择知识库"
+            aria-label={t("选择知识库")}
             className="border-line bg-surface text-ink focus:border-brand rounded-md border px-2 py-1 text-[12.5px] outline-none"
           >
             {libraries.map((library) => (
@@ -112,7 +116,10 @@ export function ChatView() {
           </select>
           {currentLibrary ? (
             <span className="text-ink-faint hidden text-[11px] sm:inline">
-              {currentLibrary.documentCount} 篇文档 · {currentLibrary.chunkCount} 个分块
+              {t("{docs} 篇文档 · {chunks} 个分块", {
+                docs: currentLibrary.documentCount,
+                chunks: currentLibrary.chunkCount,
+              })}
             </span>
           ) : null}
 
@@ -137,11 +144,11 @@ export function ChatView() {
                   )}
                   aria-hidden="true"
                 />
-                {providerLabel}
+                {t(providerLabel)}
               </span>
             ) : null}
             <IconButton
-              label={showCitations ? "隐藏引用面板" : "显示引用面板"}
+              label={showCitations ? t("隐藏引用面板") : t("显示引用面板")}
               onClick={() => setShowCitations((value) => !value)}
               className="border-line border"
             >
@@ -163,7 +170,7 @@ export function ChatView() {
           >
             <span className="flex-1">{error}</span>
             <button type="button" onClick={clearError} className="text-[11px] underline">
-              知道了
+              {t("知道了")}
             </button>
           </div>
         ) : null}
@@ -176,14 +183,14 @@ export function ChatView() {
                   <Sparkles size={20} aria-hidden="true" />
                 </div>
                 <h2 className="text-ink mt-3 text-[15px] font-semibold">
-                  基于「{currentLibrary?.name ?? "知识库"}」提问
+                  {t("基于「{name}」提问", { name: currentLibrary?.name ?? t("知识库") })}
                 </h2>
                 <p className="text-ink-muted mt-1 text-[12.5px]">
-                  回答会标注引用编号，点击即可查看原文片段。
+                  {t("回答会标注引用编号，点击即可查看原文片段。")}
                 </p>
               </div>
               <div className="mt-5 space-y-2">
-                <p className="text-ink-faint text-[11px]">试试这样问：</p>
+                <p className="text-ink-faint text-[11px]">{t("试试这样问：")}</p>
                 {STARTER_QUESTIONS.map((question) => (
                   <button
                     key={question}
@@ -192,7 +199,7 @@ export function ChatView() {
                     disabled={streaming}
                     className="border-line bg-surface text-ink-muted hover:border-brand hover:text-ink w-full rounded-lg border px-3 py-2 text-left text-[12.5px] transition-colors disabled:opacity-50"
                   >
-                    {question}
+                    {t(question)}
                   </button>
                 ))}
               </div>

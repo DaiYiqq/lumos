@@ -3,6 +3,8 @@ import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import { useT } from "@/i18n";
+
 interface MarkdownProps {
   /** Markdown 源文本。 */
   content: string;
@@ -57,6 +59,7 @@ function CodeBlock({ className, children }: { className?: string; children?: Rea
 
 /** Markdown 渲染器：GFM 表格/任务列表 + 代码高亮 + 可点击引用。 */
 export function Markdown({ content, onCitation }: MarkdownProps) {
+  const t = useT();
   const components: Components = {
     p: ({ children }) => <p className="my-2 leading-relaxed">{children}</p>,
     h1: ({ children }) => <h1 className="mt-4 mb-2 text-lg font-semibold">{children}</h1>,
@@ -88,7 +91,7 @@ export function Markdown({ content, onCitation }: MarkdownProps) {
               if (Number.isFinite(index)) onCitation(index);
             }}
             className="bg-brand-soft text-brand hover:bg-brand mx-0.5 inline-flex h-[17px] min-w-[17px] -translate-y-0.5 items-center justify-center rounded px-1 align-baseline text-[10px] font-semibold transition-colors hover:text-white"
-            aria-label={`查看引用 ${index}`}
+            aria-label={t("查看引用 {index}", { index })}
           >
             {index}
           </button>

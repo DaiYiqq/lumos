@@ -388,3 +388,45 @@ Provider 层：`deepseek` / `ollama` / `none` 三种实现 + 运行期自动降�
 ### 下一步（P7）
 
 i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Troubleshooting、GitHub Actions CI、Release workflow、版本检查与发布准备。
+
+---
+
+## P7 · 中英双语、完整文档、CI 与发布流水线
+
+**状态：已完成（2026-10-18），P8 等待 GitHub 授权**
+
+### 已完成
+
+- **中英 i18n**：`src/i18n`（中文原文为 key 的词典 + zustand 语言 store，localStorage 持久化）；
+  导航、知识库、问答、引用面板、设置、错误边界与浏览器预览提示全部可切换；
+  设置页新增「界面语言」切换（中文 / English），刷新后保持。
+- **文档**：
+  - README 重写为英文为主、中文摘要，含特性、截图/GIF、快速开始、使用、架构图、检索基准、隐私、路线图、文档索引；
+  - `docs/ARCHITECTURE.md`（进程模型、模块、数据模型、摄取/检索/Provider 设计、权衡）；
+  - `docs/DEVELOPMENT.md`（环境、质量门、真实 Provider 测试、调试、Troubleshooting、发布流程、贡献指南）；
+  - `docs/API.md`（全部 Tauri 命令、参数、返回、事件、错误约定）。
+- **CI / 发布**：
+  - `.github/workflows/ci.yml`：前端 format/typecheck/lint/test/build + Rust fmt/clippy/test（Windows/Linux/macOS）；
+  - `.github/workflows/release.yml`：tag 触发，tauri-action 构建 Windows x64/arm64、macOS arm64/x64、Linux x64 并创建草稿 Release；
+  - `.github/dependabot.yml`（npm / cargo / actions 每周更新）。
+- **演示素材**：`docs/assets/demo.gif`（由真实运行截图合成，4 帧轮播）、`docs/assets/p7-english.png`（英文界面截图）。
+
+### 验收记录（实际运行结果）
+
+| 检查项                    | 结果                                                                                 |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `pnpm typecheck` / `pnpm lint` | 通过（0 error / 0 warning）                                                     |
+| `pnpm test`               | **9 passed**（新增「设置页切换中英文」用例）                                          |
+| `pnpm build`              | 通过                                                                                 |
+| 真实应用 E2E · 英文界面   | 导航变为 `Libraries / Chat / Settings`，刷新后仍为英文；仅剩用户数据（库名/会话标题）为中文，符合预期 |
+| 英文界面截图              | `docs/assets/p7-english.png`                                                         |
+
+### 与任务书的偏差
+
+- 英文模式下 **Provider 状态详情等后端返回的说明文字仍为中文**（属于运行时数据而非界面文案），后续如需彻底英文化，应在后端按语言返回。
+- 安装包签名（Windows Authenticode / macOS notarization）未配置证书，Release 产物为未签名构建。
+
+### 下一步（P8）
+
+推送 GitHub 仓库、创建首个 Release、验证安装包。**当前阻塞**：`gh` 未登录，需要用户在终端执行
+`gh auth login`（浏览器设备码授权，不要把 token 贴到对话里）。

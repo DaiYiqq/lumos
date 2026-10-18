@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { translate, useI18nStore } from "@/i18n";
 import * as tauri from "@/lib/tauri";
 import type { LibrarySummary } from "@/types";
 
@@ -43,7 +44,11 @@ export const useLibrariesStore = create<LibrariesState>((set, get) => ({
     set({ loading: true, error: null });
 
     if (!tauri.isTauriRuntime()) {
-      set({ loading: false, loaded: true, error: "浏览器预览模式：无法读取本地知识库" });
+      set({
+        loading: false,
+        loaded: true,
+        error: translate(useI18nStore.getState().language, "浏览器预览模式：无法读取本地知识库"),
+      });
       return;
     }
 

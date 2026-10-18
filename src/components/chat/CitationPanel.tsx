@@ -1,5 +1,6 @@
 import { FileText, X } from "lucide-react";
 
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { Citation } from "@/types";
 
@@ -16,17 +17,19 @@ interface CitationPanelProps {
 
 /** 右侧引用面板：展示原文片段与位置。 */
 export function CitationPanel({ citations, selected, onSelect, onClose }: CitationPanelProps) {
+  const t = useT();
+
   return (
     <aside
-      aria-label="引用面板"
+      aria-label={t("引用面板")}
       className="border-line bg-surface flex w-80 shrink-0 flex-col border-l"
     >
       <header className="border-line flex h-11 shrink-0 items-center justify-between border-b px-3">
-        <span className="text-ink text-[13px] font-semibold">引用来源</span>
+        <span className="text-ink text-[13px] font-semibold">{t("引用来源")}</span>
         <button
           type="button"
           onClick={onClose}
-          aria-label="关闭引用面板"
+          aria-label={t("关闭引用面板")}
           className="text-ink-faint hover:bg-surface-raised hover:text-ink rounded-md p-1 transition-colors"
         >
           <X size={14} />
@@ -36,9 +39,9 @@ export function CitationPanel({ citations, selected, onSelect, onClose }: Citati
       <div className="min-h-0 flex-1 overflow-y-auto p-2">
         {citations.length === 0 ? (
           <p className="text-ink-faint px-2 py-6 text-center text-[12px] leading-relaxed">
-            回答中的 [1]、[2] 会在这里显示原文片段。
+            {t("回答中的 [1]、[2] 会在这里显示原文片段。")}
             <br />
-            点击任意编号即可跳转对照。
+            {t("点击任意编号即可跳转对照。")}
           </p>
         ) : (
           <ul className="space-y-1.5">
@@ -68,7 +71,7 @@ export function CitationPanel({ citations, selected, onSelect, onClose }: Citati
                       title={citation.documentPath}
                     >
                       {[
-                        citation.pageNo ? `第 ${citation.pageNo} 页` : null,
+                        citation.pageNo ? t("第 {page} 页", { page: citation.pageNo }) : null,
                         citation.sectionPath,
                         citation.documentPath,
                       ]

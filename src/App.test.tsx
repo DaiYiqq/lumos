@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "@/App";
+import { useI18nStore } from "@/i18n";
 import { useChatStore } from "@/stores/chat";
 import { useDocumentsStore } from "@/stores/documents";
 import { useLibrariesStore } from "@/stores/libraries";
@@ -98,6 +99,8 @@ const citation = {
 
 beforeEach(() => {
   // zustand store 在测试间是共享的，逐个重置保证用例互不影响
+  useI18nStore.setState({ language: "zh" });
+  window.localStorage.clear();
   useLibrariesStore.setState({ items: [], loaded: false, loading: false, error: null });
   useDocumentsStore.setState({
     documents: [],
@@ -182,6 +185,18 @@ describe("应用外壳", () => {
 
     expect(await screen.findByText(/Lumos v0\.1\.0 · windows/)).toBeInTheDocument();
     expect(await screen.findByText(/com\.daiyi\.lumos/)).toBeInTheDocument();
+  });
+
+  it("可以在设置页切换中英文界面", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(await screen.findByRole("button", { name: "设置" }));
+    await user.click(await screen.findByRole("button", { name: "English" }));
+
+    expect(await screen.findByRole("heading", { name: "Settings" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Libraries" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Chat" })).toBeInTheDocument();
   });
 });
 

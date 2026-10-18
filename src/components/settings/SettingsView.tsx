@@ -5,6 +5,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { useI18nStore, useT, translate } from "@/i18n";
 import * as tauri from "@/lib/tauri";
 import { cn } from "@/lib/utils";
 import { useAppInfoStore } from "@/stores/appInfo";
@@ -22,6 +23,9 @@ export function SettingsView() {
   const info = useAppInfoStore((state) => state.info);
   const themeMode = useThemeStore((state) => state.mode);
   const setThemeMode = useThemeStore((state) => state.setMode);
+  const language = useI18nStore((state) => state.language);
+  const setLanguage = useI18nStore((state) => state.setLanguage);
+  const t = useT();
 
   const [apiKey, setApiKey] = useState("");
   const [keyStatus, setKeyStatus] = useState<ApiKeyStatus | null>(null);
@@ -68,7 +72,7 @@ export function SettingsView() {
 
   const saveApiKey = async (): Promise<void> => {
     if (!apiKey.trim()) {
-      setError("请输入 API Key");
+      setError(t("请输入 API Key"));
       return;
     }
     setBusy(true);
@@ -77,7 +81,7 @@ export function SettingsView() {
       const status = await tauri.apiKeySet(apiKey.trim());
       setKeyStatus(status);
       setApiKey("");
-      setNotice("API Key 已保存到系统凭据库");
+      setNotice(t("API Key 已保存到系统凭据库"));
       await refresh();
     } catch (saveError) {
       setError(describeError(saveError));
@@ -90,7 +94,7 @@ export function SettingsView() {
     setBusy(true);
     try {
       setKeyStatus(await tauri.apiKeyClear());
-      setNotice("已删除系统凭据库中的 API Key");
+      setNotice(t("已删除系统凭据库中的 API Key"));
       await refresh();
     } catch (clearError) {
       setError(describeError(clearError));
@@ -107,7 +111,7 @@ export function SettingsView() {
       await tauri.settingsSet("ollama_base_url", ollamaUrl.trim());
       await tauri.settingsSet("ollama_model", ollamaModel.trim());
       await tauri.settingsSet("deepseek_model", deepseekModel.trim());
-      setNotice("设置已保存");
+      setNotice(t("设置已保存"));
       await refresh();
     } catch (saveError) {
       setError(describeError(saveError));
@@ -120,7 +124,7 @@ export function SettingsView() {
     setBusy(true);
     try {
       const written = await tauri.embeddingBackfill();
-      setNotice(`已补写 ${written} 个分块的向量`);
+      setNotice(t("已补写 {count} 个分块的向量", { count: written }));
       await refresh();
     } catch (backfillError) {
       setError(describeError(backfillError));
@@ -137,12 +141,17 @@ export function SettingsView() {
       const directory = await open({
         directory: true,
         multiple: false,
-        title: "选择导出目录",
+        title: t("选择导出目录"),
       });
       if (!directory || Array.isArray(directory)) return;
       const summary = await tauri.exportAll(directory);
       setNotice(
-        `已导出 ${summary.libraries} 个知识库、${summary.documents} 篇文档、${summary.conversations} 个会话到 ${summary.root}`,
+        t("已导出 {libraries} 个知识库、{documents} 篇文档、{conversations} 个会话到 {root}", {
+          libraries: summary.libraries,
+          documents: summary.documents,
+          conversations: summary.conversations,
+          root: summary.root,
+        }),
       );
     } catch (exportError) {
       setError(describeError(exportError));
@@ -154,9 +163,9 @@ export function SettingsView() {
   return (
     <div className="mx-auto w-full max-w-3xl overflow-y-auto px-8 py-8">
       <header>
-        <h1 className="text-ink text-xl font-semibold tracking-tight">设置</h1>
+        <h1 className="text-ink text-xl font-semibold tracking-tight">{t("设置")}</h1>
         <p className="text-ink-muted mt-1 text-[13px]">
-          所有配置只保存在本机；API Key 存在系统凭据库，不会写入数据库或日志。
+          {t("所有配置只保存在本机；API Key 存在系统凭据库，不会写入数据库或日志。")}
         </p>
       </header>
 
@@ -178,18 +187,19 @@ export function SettingsView() {
       <section className="border-line bg-surface mt-5 rounded-xl border p-5">
         <div className="flex items-center gap-2">
           <KeyRound size={16} className="text-brand" aria-hidden="true" />
-          <h2 className="text-ink text-[14px] font-semibold">DeepSeek API Key</h2>
+          <h2 className="text-ink text-[14px] font-semibold">{t("DeepSeek API Key")}</h2>
           {busy ? (
             <Loader2 size={13} className="text-ink-faint animate-spin" aria-hidden="true" />
           ) : null}
         </div>
         <p className="text-ink-muted mt-1 text-[12px]">
-          当前状态：
-          {keyStatus?.configured
-            ? keyStatus.source === "keyring"
-              ? " 已配置（系统凭据库）"
-              : " 已配置（环境变量）"
-            : " 未配置，将使用本地 Ollama 或离线关键词模式"}
+          {t("当前状态：{status}", {
+            status: keyStatus?.configured
+              ? keyStatus.source === "keyring"
+                ? t(" 已配置（系统凭据库）")
+                : t(" 已配置（环境变量）")
+              : t(" 未配置，将使用本地 Ollama 或离线关键词模式"),
+          })}
         </p>
 
         <div className="mt-3 flex flex-wrap items-end gap-2">
@@ -204,16 +214,16 @@ export function SettingsView() {
             />
           </div>
           <Button onClick={() => void saveApiKey()} disabled={busy}>
-            保存到凭据库
+            {t("保存到凭据库")}
           </Button>
           <Button variant="secondary" onClick={() => void clearApiKey()} disabled={busy}>
-            删除
+            {t("删除")}
           </Button>
         </div>
       </section>
 
       <section className="border-line bg-surface mt-4 rounded-xl border p-5">
-        <h2 className="text-ink text-[14px] font-semibold">模型服务</h2>
+        <h2 className="text-ink text-[14px] font-semibold">{t("模型服务")}</h2>
         <div className="mt-3 space-y-1.5">
           {providers.map((provider) => (
             <div
@@ -233,7 +243,7 @@ export function SettingsView() {
               </span>
               {provider.selected ? (
                 <span className="text-brand bg-brand-soft rounded-full px-2 py-0.5 text-[10.5px]">
-                  当前使用
+                  {t("当前使用")}
                 </span>
               ) : null}
             </div>
@@ -242,19 +252,19 @@ export function SettingsView() {
 
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Input
-            label="Ollama 地址"
+            label={t("Ollama 地址")}
             value={ollamaUrl}
             placeholder="http://127.0.0.1:11434"
             onChange={(event) => setOllamaUrl(event.currentTarget.value)}
           />
           <Input
-            label="Ollama 模型"
+            label={t("Ollama 模型")}
             value={ollamaModel}
             placeholder="例如 qwen2.5:0.5b"
             onChange={(event) => setOllamaModel(event.currentTarget.value)}
           />
           <Input
-            label="DeepSeek 模型"
+            label={t("DeepSeek 模型")}
             value={deepseekModel}
             placeholder="deepseek-chat"
             onChange={(event) => setDeepseekModel(event.currentTarget.value)}
@@ -262,39 +272,44 @@ export function SettingsView() {
         </div>
         <div className="mt-3 flex gap-2">
           <Button onClick={() => void saveSettings()} disabled={busy}>
-            保存设置
+            {t("保存设置")}
           </Button>
           <Button variant="secondary" onClick={() => void refresh()} disabled={busy}>
             <RefreshCw size={14} aria-hidden="true" />
-            重新检测
+            {t("重新检测")}
           </Button>
         </div>
       </section>
 
       <section className="border-line bg-surface mt-4 rounded-xl border p-5">
-        <h2 className="text-ink text-[14px] font-semibold">本地嵌入模型</h2>
+        <h2 className="text-ink text-[14px] font-semibold">{t("本地嵌入模型")}</h2>
         <p className="text-ink-muted mt-1 text-[12px]">
           {embedding
             ? embedding.state === "ready"
-              ? `已就绪：${embedding.model}（${embedding.dimension} 维）`
+              ? t("已就绪：{model}（{dim} 维）", {
+                  model: embedding.model,
+                  dim: embedding.dimension,
+                })
               : embedding.state === "loading"
-                ? "正在加载/下载模型（首次约 95MB）…"
-                : `不可用：${embedding.message ?? "未知原因"}，检索将降级为关键词模式`
-            : "读取中…"}
+                ? t("正在加载/下载模型（首次约 95MB）…")
+                : t("不可用：{message}，检索将降级为关键词模式", {
+                    message: embedding.message ?? t("未知原因"),
+                  })
+            : t("读取中…")}
         </p>
         <div className="mt-3 flex gap-2">
           <Button variant="secondary" onClick={() => void backfillEmbeddings()} disabled={busy}>
-            立即补写向量
+            {t("立即补写向量")}
           </Button>
           <Button variant="ghost" onClick={() => void refresh()} disabled={busy}>
-            刷新状态
+            {t("刷新状态")}
           </Button>
         </div>
       </section>
 
       <section className="border-line bg-surface mt-4 rounded-xl border p-5">
-        <h2 className="text-ink text-[14px] font-semibold">外观</h2>
-        <div className="mt-3 flex gap-2" role="group" aria-label="主题">
+        <h2 className="text-ink text-[14px] font-semibold">{t("外观")}</h2>
+        <div className="mt-3 flex gap-2" role="group" aria-label={t("主题")}>
           {THEME_OPTIONS.map((option) => (
             <Button
               key={option.mode}
@@ -302,19 +317,37 @@ export function SettingsView() {
               variant={themeMode === option.mode ? "primary" : "secondary"}
               onClick={() => setThemeMode(option.mode)}
             >
-              {option.label}
+              {t(option.label)}
             </Button>
           ))}
+        </div>
+
+        <h3 className="text-ink mt-5 text-[13px] font-semibold">{t("界面语言")}</h3>
+        <div className="mt-2 flex gap-2" role="group" aria-label={t("界面语言")}>
+          <Button
+            size="sm"
+            variant={language === "zh" ? "primary" : "secondary"}
+            onClick={() => setLanguage("zh")}
+          >
+            {t("中文")}
+          </Button>
+          <Button
+            size="sm"
+            variant={language === "en" ? "primary" : "secondary"}
+            onClick={() => setLanguage("en")}
+          >
+            English
+          </Button>
         </div>
       </section>
 
       <section className="border-line bg-surface mt-4 rounded-xl border p-5">
-        <h2 className="text-ink text-[14px] font-semibold">数据目录</h2>
+        <h2 className="text-ink text-[14px] font-semibold">{t("数据目录")}</h2>
         <p className="text-ink-muted mt-1 font-mono text-[12px]" title={info?.dataDir}>
-          {info?.dataDirDisplay ?? "读取中…"}
+          {info?.dataDirDisplay ?? t("读取中…")}
         </p>
         <p className="text-ink-faint mt-1 text-[11.5px]">
-          数据库、日志与嵌入模型都保存在这里；卸载前可手动备份整个目录。
+          {t("数据库、日志与嵌入模型都保存在这里；卸载前可手动备份整个目录。")}
         </p>
         <div className="mt-3">
           <Button
@@ -327,20 +360,20 @@ export function SettingsView() {
             }
           >
             <FolderOpen size={14} aria-hidden="true" />
-            打开数据目录
+            {t("打开数据目录")}
           </Button>
         </div>
       </section>
 
       <section className="border-line bg-surface mt-4 rounded-xl border p-5">
-        <h2 className="text-ink text-[14px] font-semibold">数据导出</h2>
+        <h2 className="text-ink text-[14px] font-semibold">{t("数据导出")}</h2>
         <p className="text-ink-muted mt-1 text-[12px]">
-          把全部知识库、文档分块与对话导出为 Markdown + JSON，导出后不依赖 Lumos 也能阅读。
+          {t("把全部知识库、文档分块与对话导出为 Markdown + JSON，导出后不依赖 Lumos 也能阅读。")}
         </p>
         <div className="mt-3">
           <Button variant="secondary" onClick={() => void exportData()} disabled={busy}>
             <FolderOpen size={14} aria-hidden="true" />
-            导出全部数据
+            {t("导出全部数据")}
           </Button>
         </div>
       </section>
@@ -352,5 +385,5 @@ export function SettingsView() {
 function describeError(error: unknown): string {
   if (typeof error === "string" && error.trim()) return error;
   if (error instanceof Error && error.message) return error.message;
-  return "操作失败，请重试";
+  return translate(useI18nStore.getState().language, "操作失败，请重试");
 }

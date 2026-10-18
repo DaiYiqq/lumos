@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { translate, useI18nStore } from "@/i18n";
 import * as tauri from "@/lib/tauri";
 import type { DocumentSummary, IngestJob } from "@/types";
 
@@ -43,7 +44,10 @@ export const useDocumentsStore = create<DocumentsState>((set) => ({
 
   load: async (libraryId) => {
     if (!tauri.isTauriRuntime()) {
-      set({ loading: false, error: "浏览器预览模式：无法读取本地文档" });
+      set({
+        loading: false,
+        error: translate(useI18nStore.getState().language, "浏览器预览模式：无法读取本地文档"),
+      });
       return;
     }
 

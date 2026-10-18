@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { translate, useI18nStore } from "@/i18n";
 import { getAppInfo, isTauriRuntime } from "@/lib/tauri";
 import type { AppInfo } from "@/types";
 
@@ -24,7 +25,10 @@ export const useAppInfoStore = create<AppInfoState>((set, get) => ({
     set({ loading: true, error: null });
 
     if (!isTauriRuntime()) {
-      set({ loading: false, error: "浏览器预览模式：未连接 Tauri 运行时" });
+      set({
+        loading: false,
+        error: translate(useI18nStore.getState().language, "浏览器预览模式：未连接 Tauri 运行时"),
+      });
       return;
     }
 

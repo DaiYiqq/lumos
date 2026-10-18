@@ -2,6 +2,7 @@ import { Send } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { useT } from "@/i18n";
 
 interface ComposerProps {
   /** 是否正在生成。 */
@@ -15,6 +16,7 @@ interface ComposerProps {
 /** 底部输入框。 */
 export function Composer({ streaming, disabled, onSend }: ComposerProps) {
   const [value, setValue] = useState("");
+  const t = useT();
 
   const submit = async (): Promise<void> => {
     const question = value.trim();
@@ -33,10 +35,10 @@ export function Composer({ streaming, disabled, onSend }: ComposerProps) {
           disabled={disabled || streaming}
           placeholder={
             disabled
-              ? "先创建一个知识库并导入文档"
-              : "基于你的文档提问，Enter 发送，Shift+Enter 换行"
+              ? t("先创建一个知识库并导入文档")
+              : t("基于你的文档提问，Enter 发送，Shift+Enter 换行")
           }
-          aria-label="提问输入框"
+          aria-label={t("提问输入框")}
           className="text-ink placeholder:text-ink-faint max-h-40 min-h-6 flex-1 resize-none bg-transparent py-1 text-[13.5px] leading-relaxed outline-none disabled:cursor-not-allowed"
           onChange={(event) => setValue(event.currentTarget.value)}
           onKeyDown={(event) => {
@@ -51,14 +53,14 @@ export function Composer({ streaming, disabled, onSend }: ComposerProps) {
           className="mb-0.5"
           disabled={disabled || streaming || value.trim().length === 0}
           onClick={() => void submit()}
-          aria-label="发送问题"
+          aria-label={t("发送问题")}
         >
           <Send size={14} aria-hidden="true" />
-          {streaming ? "生成中" : "发送"}
+          {streaming ? t("生成中") : t("发送")}
         </Button>
       </div>
       <p className="text-ink-faint mx-auto mt-1.5 max-w-3xl text-[10.5px]">
-        回答只依据你导入的文档生成；没有引用依据时会明确说明。
+        {t("回答只依据你导入的文档生成；没有引用依据时会明确说明。")}
       </p>
     </div>
   );

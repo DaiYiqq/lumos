@@ -1,6 +1,7 @@
 import { Loader2, Sparkles } from "lucide-react";
 
 import { Markdown } from "@/components/chat/Markdown";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { DisplayMessage } from "@/stores/chat";
 
@@ -16,6 +17,7 @@ interface MessageBubbleProps {
 /** 单条消息气泡。 */
 export function MessageBubble({ message, streaming, onCitation }: MessageBubbleProps) {
   const isUser = message.role === "user";
+  const t = useT();
 
   return (
     <div className={cn("flex gap-3", isUser ? "flex-row-reverse" : "flex-row")}>
@@ -26,7 +28,11 @@ export function MessageBubble({ message, streaming, onCitation }: MessageBubbleP
         )}
         aria-hidden="true"
       >
-        {isUser ? <span className="text-[11px] font-semibold">我</span> : <Sparkles size={14} />}
+        {isUser ? (
+          <span className="text-[11px] font-semibold">{t("我")}</span>
+        ) : (
+          <Sparkles size={14} />
+        )}
       </div>
 
       <div
@@ -42,7 +48,7 @@ export function MessageBubble({ message, streaming, onCitation }: MessageBubbleP
         ) : (
           <div className="text-ink-faint flex items-center gap-2 text-[13px]">
             <Loader2 size={14} className="animate-spin" aria-hidden="true" />
-            正在检索并生成回答…
+            {t("正在检索并生成回答…")}
           </div>
         )}
 

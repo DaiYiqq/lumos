@@ -2,6 +2,7 @@ import { Library, MessagesSquare, Moon, Settings, Sun, SunMoon } from "lucide-re
 import type { LucideIcon } from "lucide-react";
 
 import { Logo } from "@/components/ui/Logo";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { useThemeStore } from "@/stores/theme";
 import type { AppView } from "@/types";
@@ -28,8 +29,10 @@ interface SidebarProps {
 /** 左侧主导航栏。 */
 export function Sidebar({ activeView, onSelect }: SidebarProps) {
   const mode = useThemeStore((state) => state.mode);
+  const t = useT();
 
   const ThemeIcon = mode === "dark" ? Moon : mode === "light" ? Sun : SunMoon;
+  const themeName = t(themeLabelSource(mode));
 
   return (
     <aside className="border-line bg-surface flex w-64 shrink-0 flex-col border-r">
@@ -40,12 +43,12 @@ export function Sidebar({ activeView, onSelect }: SidebarProps) {
             Lumos
           </div>
           <div className="text-ink-faint mt-1 truncate text-[11px] leading-none">
-            本地优先的引用式知识库
+            {t("本地优先的引用式知识库")}
           </div>
         </div>
       </div>
 
-      <nav className="flex flex-col gap-1 px-3" aria-label="主导航">
+      <nav className="flex flex-col gap-1 px-3" aria-label={t("主导航")}>
         {NAV_ITEMS.map(({ view, label, icon: Icon }) => {
           const active = view === activeView;
           return (
@@ -63,7 +66,7 @@ export function Sidebar({ activeView, onSelect }: SidebarProps) {
               )}
             >
               <Icon size={16} strokeWidth={2} aria-hidden="true" />
-              {label}
+              {t(label)}
             </button>
           );
         })}
@@ -73,26 +76,26 @@ export function Sidebar({ activeView, onSelect }: SidebarProps) {
         <button
           type="button"
           onClick={() => useThemeStore.getState().cycleMode()}
-          title={`主题：${themeLabel(mode)}（点击切换）`}
+          title={t("主题：{mode}（点击切换）", { mode: themeName })}
           className="text-ink-muted hover:bg-surface-raised hover:text-ink flex h-8 items-center gap-2 rounded-lg px-2.5 text-[13px] transition-colors"
         >
           <ThemeIcon size={15} aria-hidden="true" />
-          <span>主题：{themeLabel(mode)}</span>
+          <span>{t("主题：{mode}", { mode: themeName })}</span>
         </button>
 
         <div className="text-ink-faint px-2.5 pb-1 text-[11px] leading-relaxed">
-          所有数据只保存在本机
+          {t("所有数据只保存在本机")}
         </div>
         <div className="sr-only" aria-live="polite">
-          当前主题：{themeLabel(mode)}
+          {t("当前主题：{mode}", { mode: themeName })}
         </div>
       </div>
     </aside>
   );
 }
 
-/** 主题模式的中文标签。 */
-function themeLabel(mode: "system" | "light" | "dark"): string {
+/** 主题模式的中文标签（作为词典键）。 */
+function themeLabelSource(mode: "system" | "light" | "dark"): string {
   if (mode === "dark") return "深色";
   if (mode === "light") return "浅色";
   return "跟随系统";

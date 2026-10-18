@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { ConversationSummary } from "@/types";
 
@@ -39,12 +40,13 @@ export function ConversationList({
   const [deleteTarget, setDeleteTarget] = useState<ConversationSummary | null>(null);
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
+  const t = useT();
 
   return (
     <aside className="border-line bg-surface flex w-60 shrink-0 flex-col border-r">
       <div className="flex items-center justify-between px-3 pt-3 pb-2">
-        <span className="text-ink text-[13px] font-semibold">对话</span>
-        <IconButton label="新建对话" onClick={onNew}>
+        <span className="text-ink text-[13px] font-semibold">{t("对话")}</span>
+        <IconButton label={t("新建对话")} onClick={onNew}>
           <MessageSquarePlus size={15} />
         </IconButton>
       </div>
@@ -58,7 +60,7 @@ export function ConversationList({
           </div>
         ) : conversations.length === 0 ? (
           <p className="text-ink-faint px-2 py-6 text-center text-[12px]">
-            还没有对话，直接在右侧提问即可开始。
+            {t("还没有对话，直接在右侧提问即可开始。")}
           </p>
         ) : (
           <ul className="space-y-0.5">
@@ -84,7 +86,7 @@ export function ConversationList({
 
                   <div className="absolute top-1/2 right-1 flex -translate-y-1/2 gap-0.5 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
                     <IconButton
-                      label={`重命名对话 ${conversation.title}`}
+                      label={t("重命名对话 {title}", { title: conversation.title })}
                       className="size-6"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -95,7 +97,7 @@ export function ConversationList({
                       <Pencil size={12} />
                     </IconButton>
                     <IconButton
-                      label={`删除对话 ${conversation.title}`}
+                      label={t("删除对话 {title}", { title: conversation.title })}
                       className="size-6"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -115,12 +117,12 @@ export function ConversationList({
       {renameTarget ? (
         <Dialog
           open
-          title="重命名对话"
+          title={t("重命名对话")}
           onClose={() => setRenameTarget(null)}
           footer={
             <>
               <Button variant="ghost" onClick={() => setRenameTarget(null)} disabled={busy}>
-                取消
+                {t("取消")}
               </Button>
               <Button
                 disabled={busy}
@@ -133,13 +135,13 @@ export function ConversationList({
                   setRenameTarget(null);
                 }}
               >
-                保存
+                {t("保存")}
               </Button>
             </>
           }
         >
           <Input
-            label="标题"
+            label={t("标题")}
             value={title}
             autoFocus
             maxLength={80}
@@ -151,13 +153,15 @@ export function ConversationList({
       {deleteTarget ? (
         <Dialog
           open
-          title="删除对话？"
-          description={`「${deleteTarget.title}」的所有消息都会从本机删除，且无法恢复。`}
+          title={t("删除对话？")}
+          description={t("「{title}」的所有消息都会从本机删除，且无法恢复。", {
+            title: deleteTarget.title,
+          })}
           onClose={() => setDeleteTarget(null)}
           footer={
             <>
               <Button variant="ghost" onClick={() => setDeleteTarget(null)} disabled={busy}>
-                取消
+                {t("取消")}
               </Button>
               <Button
                 variant="danger"
@@ -169,7 +173,7 @@ export function ConversationList({
                   setDeleteTarget(null);
                 }}
               >
-                删除
+                {t("删除")}
               </Button>
             </>
           }
