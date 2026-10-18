@@ -523,3 +523,50 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 - “全平台”当前覆盖：Windows（x64、arm64）、macOS（Apple Silicon）、Linux（x64）。
   macOS Intel 因 ONNX Runtime 无预编译产物暂不支持；Linux arm64 暂未提供。
 - 安装包仍未签名，README 已明确说明首次运行的系统提示与处理方式。
+
+---
+
+## P9 · 社区共同维护（Community-ready）
+
+**状态：已完成（2026-10-18）**
+
+### 已完成
+
+- **贡献体系**：
+  - `CONTRIBUTING.md`：贡献方式、开发流程、质量门、PR 约定、翻译流程、评审与发布、中文摘要；
+  - `CODE_OF_CONDUCT.md`：Contributor Covenant 2.1（含中文摘要与举报邮箱）；
+  - `SECURITY.md`：支持版本、私下报告渠道（GitHub Private Vulnerability Reporting）、响应时限与范围；
+  - `GOVERNANCE.md`：角色（Contributor / Reviewer / Maintainer / Translation maintainer）、懒共识决策、
+    成为维护者的路径、发布与仓库设置；
+  - `MAINTAINERS.md`：当前维护者、领域归属、Reviewer/翻译维护者招募说明。
+- **GitHub 协作设施**：
+  - Issue 模板：Bug / Feature / Translation（YAML 表单）+ `config.yml`（引导 Discussions / 安全报告 / 贡献指南）；
+  - `pull_request_template.md`：变更说明、测试命令、文档/i18n/安全检查清单；
+  - `.github/CODEOWNERS`：默认与分领域 owner；
+  - 已开启 **Discussions**、**Private Vulnerability Reporting**；
+  - 新增 `translation`、`community` 标签。
+- **翻译体系**：`docs/I18N.md`（UI 词典机制、新增语言步骤、README 翻译规范、术语表、翻译状态与 Review checklist）；
+  任一语言的翻译贡献都可按流程成为 translation maintainer。
+- **首批 community issues**（均可在 GitHub 直接认领）：
+  - #7 Korean UI + README translation
+  - #8 winget manifest
+  - #9 Linux arm64 installers
+  - #10 optional reranker
+- **README（4 种语言）**统一新增 Community 区块与 PR Welcome 徽章，链接贡献指南、行为准则、
+  治理、安全、翻译指南、Discussions、good first issue。
+
+### 验证
+
+| 检查项                          | 结果                                |
+| ------------------------------- | ----------------------------------- |
+| 社区文件存在于 GitHub `main`    | 9/9 校验通过（树内容一致）          |
+| Discussions                     | 已开启                              |
+| Private Vulnerability Reporting | 已开启                              |
+| 标签与首批 issues               | `translation`、`community` + #7–#10 |
+| README 语言互链 / PR 徽章       | 4 个 README 已更新                  |
+| CI                              | 文档变更后仍全绿（见 Actions）      |
+
+### 说明
+
+- 维护者模型是「项目负责人 + 领域 owner」，后续通过 `GOVERNANCE.md` 的提名流程扩充 Reviewer 与翻译维护者。
+- 仓库未启用强制 PR 审核的 branch protection，避免阻塞个人维护；团队扩大后可按治理文档逐步开启。
