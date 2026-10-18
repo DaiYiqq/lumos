@@ -28,3 +28,21 @@ export function formatBytes(bytes: number): string {
   }
   return `${value.toFixed(1)} ${units[unitIndex]}`;
 }
+
+/**
+ * 把 RFC3339 时间格式化为本地日期时间。
+ *
+ * @param iso RFC3339 字符串
+ * @returns 例如 `2026/10/18 14:56`；无法解析时原样返回
+ */
+export function formatDateTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}

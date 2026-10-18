@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md";
 
 /** Button 组件属性。 */
@@ -20,6 +20,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   secondary:
     "border border-line bg-surface text-ink hover:bg-surface-raised focus-visible:outline-brand",
   ghost: "text-ink-muted hover:bg-surface-raised hover:text-ink focus-visible:outline-brand",
+  danger:
+    "bg-red-600 text-white shadow-sm shadow-red-600/25 hover:bg-red-700 focus-visible:outline-red-600",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

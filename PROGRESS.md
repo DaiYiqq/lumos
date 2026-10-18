@@ -110,10 +110,43 @@
 
 ### 已知问题
 
-- 前端一级页面暂时是空状态（知识库/问答/设置），数据层与检索层接入后逐个落地；这属于阶段计划内，不是遗留 TODO。
 - `gh` 尚未登录，P8 推送前需要项目负责人执行 `gh auth login`（浏览器 device flow）。
 - 主题默认跟随系统；深浅色两套 token 已就绪，但尚未做视觉走查（P6 统一打磨）。
+- P1 的知识库列表未做虚拟化；P6 性能阶段会处理超大列表（配合文档列表一起）。
 
-### 下一步（P1）
+---
 
-数据层：SQLite 连接与迁移（`schema_migrations`）、library CRUD、单元测试。
+## P1 · 数据层：迁移、repository、CRUD 命令
+
+**状态：已完成（2026-10-18）**
+
+### 已完成
+
+- **连接层** `db/mod.rs`：`Database` 用 `Mutex<Connection>` 串行化写操作，开启 `foreign_keys=ON`、WAL、`synchronous=NORMAL`、`busy_timeout=5000`；提供 `open` / `open_in_memory` / `migrate` / `with_connection`。
+- **迁移** `db/migrations.rs` + `migrations/0001_init.sql`：手写版本号迁移（`schema_migrations`），每条迁移与版本记录同事务提交，可重复执行。
+- **初始结构**：`libraries`、`documents`、`chunks`、`conversations`、`messages`、`chunks_fts`（FTS5 外部内容表）+ 同步触发器；所有子表 `ON DELETE CASCADE`。
+- **仓储层** `db/repo/libraries.rs`：`create_library` / `get_library` / `list_libraries`（含文档数、分块数、占用字节的聚合查询）/ `rename_library` / `delete_library`；名称去空白、长度上限 80 字符、大小写不敏感重名检测。
+- **命令层** `commands/libraries.rs`：`library_list` / `library_create` / `library_rename` / `library_delete`，薄层转发 + 错误转人话；`state.rs` 持有 `AppState`，`lib.rs` 的 `setup` 里完成「数据目录 → 打开 `lumos.db` → 迁移 → manage」。
+- **前端**：知识库页面完整可用（卡片列表、文档/分块/占用统计、新建、重命名、删除确认、错误横幅、骨架屏、空状态）；自研 `Dialog` / `Input` / `IconButton`；`stores/libraries.ts` 封装 zustand 状态。
+
+### 验收记录（实际运行结果）
+
+| 检查项                                      | 结果                                                                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cargo test`                                | **9 passed, 0 failed**（迁移幂等、建表、CRUD、重名/空名/超长名、重命名冲突、级联删除、FTS 触发器）                                                |
+| `cargo clippy --all-targets -- -D warnings` | 退出码 0，零警告                                                                                                                                  |
+| `cargo fmt --all --check`                   | 通过                                                                                                                                              |
+| `pnpm typecheck` / `pnpm lint`              | 通过                                                                                                                                              |
+| `pnpm test`                                 | **6 passed**（含创建、重命名、删除确认三个交互用例）                                                                                              |
+| 真实应用 E2E                                | 通过 CDP 驱动真实窗口：创建「P1 验收库」→ 列表出现并显示 `文档 0 / 分块 0 / 占用 0 B` → 删除并确认 → 回到空状态；截图 `docs/assets/p1-window.png` |
+
+### 踩坑记录
+
+1. **FTS5 中文分词**：`unicode61` 会把整段中文当成一个 token，中文子串检索几乎不可用；改用 `tokenize='trigram'`，实测 `MATCH '医学图像'` 能命中「对比学习在医学图像分割中的应用」。
+2. **`rusqlite` 的 bundled SQLite 默认已启用 FTS5**，无需额外 feature；但外部内容表的同步触发器必须手写（AI/AD/AU 三个）。
+3. **serde `#[serde(flatten)]` 不会继承内层结构体的命名规则**：`Library` 与 `LibrarySummary` 都各自标注 `rename_all = "camelCase"`，前端才能拿到 `documentCount` 这类字段。
+4. **Tauri 同步命令里直接操作 SQLite 没问题**，但后续批量嵌入必须挪到后台任务，避免阻塞 IPC。
+
+### 下一步（P2）
+
+摄取层：PDF / EPUB / DOCX / Markdown / TXT / HTML 解析 → 清洗 → 层级感知分块 → 本地嵌入 → 写入 `chunks` / `chunks_fts`；任务队列支持暂停/取消与重启续跑。

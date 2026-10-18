@@ -17,5 +17,31 @@ export interface AppInfo {
 /** 侧边栏一级导航。 */
 export type AppView = "library" | "chat" | "settings";
 
+/** 知识库基础信息。 */
+export interface Library {
+  /** 知识库 UUID。 */
+  id: string;
+  /** 用户可见名称。 */
+  name: string;
+  /** 创建时间（RFC3339 UTC）。 */
+  createdAt: string;
+  /** 最后更新时间（RFC3339 UTC）。 */
+  updatedAt: string;
+  /** 该库使用的嵌入模型标识。 */
+  embeddingModel: string;
+  /** 分块配置（JSON 字符串）。 */
+  chunkConfig: string;
+}
+
+/** 知识库列表项：基础信息 + 统计。 */
+export interface LibrarySummary extends Library {
+  /** 文档数量。 */
+  documentCount: number;
+  /** 分块数量。 */
+  chunkCount: number;
+  /** 文档体积总和（字节）。 */
+  sizeBytes: number;
+}
+
 /** 深浅色主题模式。 */
 export type ThemeMode = "system" | "light" | "dark";
