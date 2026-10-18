@@ -9,6 +9,7 @@
 [![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 Lumos は PDF / EPUB / Word / Markdown / HTML / プレーンテキスト / コードを取り込み、解析・
 チャンク分割・ベクトル化・検索を**すべてローカル**で行います。回答は**あなたの文書だけ**に
@@ -216,6 +217,21 @@ pnpm tauri build             # 現在のプラットフォーム向けインス�
 - [アーキテクチャとデータモデル](docs/ARCHITECTURE.md)
 - [Tauri コマンドリファレンス](docs/API.md)
 - [ハイブリッド検索ベンチマーク](docs/RETRIEVAL.md)
+- [翻訳ガイド](docs/I18N.md)
+
+## コミュニティ
+
+Lumos は**コミュニティによって維持**されており、あらゆる規模の貢献を歓迎します。
+
+- [コントリビューションガイド](CONTRIBUTING.md) — 開発環境、品質ゲート、PR の流れ、最初のタスク
+- [行動規範](CODE_OF_CONDUCT.md) — 敬意と寛容さを大切に
+- [ガバナンス](GOVERNANCE.md) · [メンテナー](MAINTAINERS.md) — 役割、意思決定、メンテナーになる方法
+- [セキュリティポリシー](SECURITY.md) — 脆弱性は非公開で報告
+- [翻訳ガイド](docs/I18N.md) — UI 言語や README 翻訳の追加
+- [Discussions](https://github.com/DaiYiqq/lumos/discussions) · [Issues](https://github.com/DaiYiqq/lumos/issues)
+- はじめやすいラベル: [`good first issue`](https://github.com/DaiYiqq/lumos/labels/good%20first%20issue) ·
+  [`help wanted`](https://github.com/DaiYiqq/lumos/labels/help%20wanted) ·
+  [`translation`](https://github.com/DaiYiqq/lumos/labels/translation)
 
 ## コントリビュート
 
@@ -227,7 +243,8 @@ cd src-tauri && cargo fmt --all && cargo clippy --all-targets -- -D warnings && 
 ```
 
 コミットは焦点を絞り、秘密情報や個人文書を含めないでください。バグ修正にはテストを追加して
-ください。詳細は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing)。
+ください。詳しい流れは [CONTRIBUTING.md](CONTRIBUTING.md)、開発の詳細は
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing) を参照してください。
 
 ## ライセンス
 

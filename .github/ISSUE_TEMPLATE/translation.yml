@@ -1,0 +1,47 @@
+name: 🌍 Translation
+description: Volunteer to translate the README or UI (any language)
+title: "[i18n] "
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping translate Lumos! Read [docs/I18N.md](../docs/I18N.md) first.
+        You can open this issue to claim a language, or open a PR directly.
+
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: "e.g. 한국어 (ko), Español (es), Deutsch (de)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - README only
+        - UI only
+        - README + UI
+    validations:
+      required: true
+
+  - type: textarea
+    id: experience
+    attributes:
+      label: Relevant experience (optional)
+      description: Native speaker? Previous translations? No experience required.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: commitment
+    attributes:
+      label: Commitment
+      options:
+        - label: I can keep this translation in sync for future releases
+          required: false
+        - label: I have read the translation guide
+          required: true

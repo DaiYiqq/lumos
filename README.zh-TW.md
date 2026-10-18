@@ -8,6 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 Lumos 會匯入 PDF、EPUB、Word、Markdown、網頁、純文字與程式碼檔案，在**本機**完成解析、切塊、
 向量化與檢索，並**只依據你的文件**回答問題。每個結論都帶 `[n]` 引用編號，點一下即可回到原文的
@@ -204,6 +205,21 @@ pnpm tauri build             # 產生目前平台的安裝檔
 - [架構與資料模型](docs/ARCHITECTURE.md)
 - [Tauri 命令參考](docs/API.md)
 - [混合檢索評測](docs/RETRIEVAL.md)
+- [翻譯指南](docs/I18N.md)
+
+## 社群
+
+Lumos 由社群共同維護，歡迎任何規模的貢獻。
+
+- [貢獻指南](CONTRIBUTING.md) —— 開發環境、品質關卡、PR 流程、新手任務
+- [行為準則](CODE_OF_CONDUCT.md) —— 保持友善與尊重
+- [治理方式](GOVERNANCE.md) · [維護者](MAINTAINERS.md) —— 角色、決策流程、如何成為維護者
+- [安全策略](SECURITY.md) —— 私下回報安全漏洞
+- [翻譯指南](docs/I18N.md) —— 新增介面語言或 README 翻譯
+- [Discussions](https://github.com/DaiYiqq/lumos/discussions) · [Issues](https://github.com/DaiYiqq/lumos/issues)
+- 新手可以從這些標籤開始：[`good first issue`](https://github.com/DaiYiqq/lumos/labels/good%20first%20issue) ·
+  [`help wanted`](https://github.com/DaiYiqq/lumos/labels/help%20wanted) ·
+  [`translation`](https://github.com/DaiYiqq/lumos/labels/translation)
 
 ## 參與貢獻
 
@@ -215,7 +231,8 @@ cd src-tauri && cargo fmt --all && cargo clippy --all-targets -- -D warnings && 
 ```
 
 請保持提交聚焦，不要提交金鑰或個人文件；修正 Bug 時請補充測試。
-詳見 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing)。
+完整流程見 [CONTRIBUTING.md](CONTRIBUTING.md)，開發細節見
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing)。
 
 ## 授權
 

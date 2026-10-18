@@ -1,0 +1,22 @@
+# Default owners for the repository. See GOVERNANCE.md and MAINTAINERS.md.
+* @DaiYiqq
+
+# Backend
+/src-tauri/ @DaiYiqq
+
+# Frontend and translations
+/src/ @DaiYiqq
+/src/i18n/ @DaiYiqq
+/README*.md @DaiYiqq
+/docs/I18N.md @DaiYiqq
+
+# CI, release and packaging
+/.github/ @DaiYiqq
+/src-tauri/tauri.conf.json @DaiYiqq
+
+# Community documents
+/CONTRIBUTING.md @DaiYiqq
+/CODE_OF_CONDUCT.md @DaiYiqq
+/SECURITY.md @DaiYiqq
+/GOVERNANCE.md @DaiYiqq
+/MAINTAINERS.md @DaiYiqq

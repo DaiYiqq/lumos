@@ -8,6 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 Lumos ingests PDF / EPUB / Word / Markdown / HTML / plain text and code, indexes everything locally,
 and answers questions **only from your documents** — every claim carries a `[n]` citation that jumps
@@ -213,6 +214,21 @@ Benchmarked on a 24-document mixed corpus with 16 Chinese queries (recall@3, see
 - [Architecture and data model](docs/ARCHITECTURE.md)
 - [Tauri command reference](docs/API.md)
 - [Hybrid retrieval benchmark](docs/RETRIEVAL.md)
+- [Translation guide](docs/I18N.md)
+
+## Community
+
+Lumos is **community-maintained** and contributions of every size are welcome.
+
+- [Contributing guide](CONTRIBUTING.md) — setup, quality gates, PR process, first issues
+- [Code of Conduct](CODE_OF_CONDUCT.md) — be kind and respectful
+- [Governance](GOVERNANCE.md) · [Maintainers](MAINTAINERS.md) — roles, decisions, how to become a maintainer
+- [Security policy](SECURITY.md) — report vulnerabilities privately
+- [Translation guide](docs/I18N.md) — add a UI language or README translation
+- [Discussions](https://github.com/DaiYiqq/lumos/discussions) · [Issues](https://github.com/DaiYiqq/lumos/issues)
+- Good starting points: [`good first issue`](https://github.com/DaiYiqq/lumos/labels/good%20first%20issue) ·
+  [`help wanted`](https://github.com/DaiYiqq/lumos/labels/help%20wanted) ·
+  [`translation`](https://github.com/DaiYiqq/lumos/labels/translation)
 
 ## Contributing
 
@@ -224,7 +240,8 @@ cd src-tauri && cargo fmt --all && cargo clippy --all-targets -- -D warnings && 
 ```
 
 Please keep commits focused, avoid secrets/personal data, and add a test when fixing a bug.
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing) for details.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, or
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing) for development details.
 
 ## License
 

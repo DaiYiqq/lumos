@@ -1,0 +1,89 @@
+name: 🐛 Bug report
+description: Report a reproducible problem (English or 中文)
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill in as much as you can.
+        **Do not include API keys, personal documents or unredacted logs.**
+
+  - type: input
+    id: version
+    attributes:
+      label: Lumos version
+      description: Shown in the bottom-right corner of the app (e.g. 0.1.0)
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows x64
+        - Windows arm64
+        - macOS Apple Silicon
+        - Linux x64 (AppImage)
+        - Linux x64 (deb/rpm)
+        - Built from source
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What did you do, in order?
+      placeholder: |
+        1. Create a library
+        2. Import this file type...
+        3. Ask "..."
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the error message shown in the UI.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log lines (optional)
+      description: From the data directory `logs/lumos.log`. Remove secrets and document contents.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, AI provider in use, file types, network restrictions, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and did not find a duplicate
+          required: true
+        - label: I removed API keys and personal data from this report
+          required: true
