@@ -30,7 +30,7 @@ Pick the file for your OS and architecture:
 | **Linux**   | x64 (Debian/Ubuntu)   | `.deb`                    | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
 | **Linux**   | x64 (Fedora/RHEL)     | `.rpm`                    | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
 
-→ **All releases and checksums:** <https://github.com/DaiYiqq/lumos/releases/latest>
+→ **All releases:** <https://github.com/DaiYiqq/lumos/releases/latest>
 
 > The current installers are **unsigned**. Windows SmartScreen and macOS Gatekeeper may show a
 > warning the first time; the steps below explain how to proceed safely.

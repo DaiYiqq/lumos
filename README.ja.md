@@ -32,7 +32,7 @@ OS とアーキテクチャに合わせて選択してください。
 | **Linux**        | x64（Debian/Ubuntu）   | `.deb`                    | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
 | **Linux**        | x64（Fedora/RHEL）     | `.rpm`                    | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
 
-→ **すべてのリリースとチェックサム：** <https://github.com/DaiYiqq/lumos/releases/latest>
+→ **すべてのリリース:** <https://github.com/DaiYiqq/lumos/releases/latest>
 
 > 現在のインストーラーは**未署名**です。Windows SmartScreen と macOS Gatekeeper が初回起動時に
 > 警告を表示する場合があります。以下の手順で安全に進めてください。

@@ -28,7 +28,7 @@ Lumos 会导入 PDF、EPUB、Word、Markdown、网页、纯文本与代码文件
 | **Linux**   | x64（Debian/Ubuntu）   | `.deb`                | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
 | **Linux**   | x64（Fedora/RHEL）     | `.rpm`                | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
 
-→ **全部版本与校验信息：** <https://github.com/DaiYiqq/lumos/releases/latest>
+→ **全部版本：** <https://github.com/DaiYiqq/lumos/releases/latest>
 
 > 当前安装包**未签名**，Windows SmartScreen 与 macOS Gatekeeper 首次运行时可能提示未知发布者，
 > 下面给出安全的处理步骤。

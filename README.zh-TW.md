@@ -28,7 +28,7 @@ Lumos 會匯入 PDF、EPUB、Word、Markdown、網頁、純文字與程式碼檔
 | **Linux**   | x64（Debian/Ubuntu）   | `.deb`                | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
 | **Linux**   | x64（Fedora/RHEL）     | `.rpm`                | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
 
-→ **所有版本與校驗資訊：** <https://github.com/DaiYiqq/lumos/releases/latest>
+→ **所有版本：** <https://github.com/DaiYiqq/lumos/releases/latest>
 
 > 目前安裝檔**未簽章**，Windows SmartScreen 與 macOS Gatekeeper 首次執行時可能提示未知發行者，
 > 下方提供安全的處理步驟。
