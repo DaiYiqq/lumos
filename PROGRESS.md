@@ -430,3 +430,41 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 
 推送 GitHub 仓库、创建首个 Release、验证安装包。**当前阻塞**：`gh` 未登录，需要用户在终端执行
 `gh auth login`（浏览器设备码授权，不要把 token 贴到对话里）。
+
+---
+
+## P8 · 发布（进行中：本地安装包已构建，等待 GitHub 授权）
+
+### 已完成
+
+- **Windows x64 安装包**：`pnpm tauri build --bundles nsis` 实际构建成功
+  - 产物：`src-tauri/target/release/bundle/nsis/Lumos_0.1.0_x64-setup.exe`（9.10 MiB）
+  - release 模式全量编译 6m07s，无错误
+- **发布流水线就绪**：`.github/workflows/release.yml` 已配置 Windows x64/arm64、macOS arm64/x64、Linux x64；
+  推送 `v*` tag 后由 CI 产出各平台安装包并创建草稿 Release。
+- **仓库状态**：8 个 commit，工作区干净；仓库内无密钥、无个人文档（`D:\dev\_bootstrap` 与
+  `%APPDATA%\com.daiyi.lumos` 均为本地测试数据，不在版本库中）。
+
+### 当前阻塞（需要用户操作）
+
+`gh auth status` → **未登录**；`https://github.com/DaiYiqq/lumos` 尚不存在（`git ls-remote` 返回 Repository not found）。
+
+请在任意终端执行（`gh` 未加入 PATH 时用完整路径）：
+
+```powershell
+& "C:\Program Files\GitHub CLI\gh.exe" auth login
+# 按提示选择 GitHub.com、HTTPS、浏览器登录，完成设备码授权
+```
+
+授权完成后回「继续」，我将：
+
+1. `gh repo create DaiYiqq/lumos --public --source . --remote origin --push`
+2. 确认 CI 通过（format/typecheck/lint/test + 三平台 Rust 检查）
+3. 打 `v0.1.0` tag 触发 Release workflow，检查草稿 Release 与安装包
+4. 补充 README 徽章/Release 链接并做最终验收
+
+### 已知限制（如实记录）
+
+- 本地只构建了 **Windows x64** 安装包；arm64 需要额外 ARM64 MSVC 工具链或由 CI 的 windows-latest 构建。
+- 安装包未做 Authenticode 签名（无证书），Windows SmartScreen 可能提示未知发布者。
+- macOS / Linux 安装包只能在 GitHub Actions 或对应系统上构建。
