@@ -80,21 +80,25 @@ fn shorten_home(path: &std::path::Path, home: Option<&std::path::Path>) -> Strin
 #[cfg(test)]
 mod tests {
     use super::shorten_home;
-    use std::path::Path;
+    use std::path::{Path, MAIN_SEPARATOR};
 
     #[test]
     fn replaces_home_prefix_with_tilde() {
-        let path = Path::new(r"C:\Users\demo\AppData\Roaming\com.daiyi.lumos");
-        let home = Path::new(r"C:\Users\demo");
-        assert_eq!(
-            shorten_home(path, Some(home)),
-            r"~\AppData\Roaming\com.daiyi.lumos"
+        let home = std::env::temp_dir().join("lumos-home");
+        let path = home.join("AppData").join("Roaming").join("com.daiyi.lumos");
+        let expected = format!(
+            "~{sep}AppData{sep}Roaming{sep}com.daiyi.lumos",
+            sep = MAIN_SEPARATOR
         );
+        assert_eq!(shorten_home(&path, Some(home.as_path())), expected);
     }
 
     #[test]
     fn keeps_path_when_home_is_unknown() {
-        let path = Path::new(r"D:\data\lumos");
-        assert_eq!(shorten_home(path, None), r"D:\data\lumos");
+        let path = std::env::temp_dir().join("lumos-data");
+        assert_eq!(
+            shorten_home(&path, None),
+            Path::new(&path).display().to_string()
+        );
     }
 }
