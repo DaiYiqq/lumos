@@ -48,7 +48,7 @@ SQLite database on your machine.
 Download the latest installer from [Releases](https://github.com/DaiYiqq/lumos/releases):
 
 - Windows: `.exe` (NSIS) — x64 and arm64
-- macOS: `.dmg` — Apple Silicon and Intel
+- macOS: `.dmg` — Apple Silicon
 - Linux: `.AppImage` / `.deb`
 
 ### Build from source
