@@ -3,3 +3,4 @@
 pub mod app;
 pub mod ingest;
 pub mod libraries;
+pub mod retrieval;

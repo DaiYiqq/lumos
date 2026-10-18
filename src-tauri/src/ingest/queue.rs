@@ -14,6 +14,7 @@ use tokio::sync::mpsc;
 
 use crate::db::Database;
 use crate::db::repo::jobs;
+use crate::embedding::EmbeddingService;
 use crate::error::AppError;
 use crate::ingest::pipeline;
 
@@ -48,7 +49,11 @@ pub struct IngestQueue {
 impl IngestQueue {
     /// 启动后台工作线程。
     #[must_use]
-    pub fn start(app: AppHandle, database: Arc<Database>) -> Arc<Self> {
+    pub fn start(
+        app: AppHandle,
+        database: Arc<Database>,
+        embedder: Arc<EmbeddingService>,
+    ) -> Arc<Self> {
         let (sender, mut receiver) = mpsc::unbounded_channel::<String>();
         let paused = Arc::new(AtomicBool::new(false));
         let cancelled: Arc<Mutex<HashSet<String>>> = Arc::new(Mutex::new(HashSet::new()));
@@ -56,6 +61,7 @@ impl IngestQueue {
         let worker_paused = Arc::clone(&paused);
         let worker_cancelled = Arc::clone(&cancelled);
         let worker_database = Arc::clone(&database);
+        let worker_embedder = Arc::clone(&embedder);
 
         tauri::async_runtime::spawn(async move {
             while let Some(job_id) = receiver.recv().await {
@@ -90,6 +96,7 @@ impl IngestQueue {
 
                 let task_database = Arc::clone(&worker_database);
                 let task_cancelled = Arc::clone(&worker_cancelled);
+                let task_embedder = Arc::clone(&worker_embedder);
                 let task_job_id = job_id.clone();
                 let library_id = job.library_id.clone();
                 let path = job.path.clone();
@@ -100,6 +107,7 @@ impl IngestQueue {
                         &library_id,
                         std::path::Path::new(&path),
                         check,
+                        Some(&task_embedder),
                     )
                 })
                 .await;

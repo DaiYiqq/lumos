@@ -3,12 +3,15 @@
 use std::sync::Arc;
 
 use crate::db::Database;
+use crate::embedding::EmbeddingService;
 use crate::ingest::queue::IngestQueue;
 
-/// 全局状态：数据库 + 摄取队列。
+/// 全局状态：数据库 + 摄取队列 + 本地嵌入服务。
 pub struct AppState {
     /// SQLite 数据库（连接 + 迁移状态）。
     pub db: Arc<Database>,
     /// 后台摄取队列。
     pub queue: Arc<IngestQueue>,
+    /// 本地嵌入服务（可能仍在加载或失败）。
+    pub embedder: Arc<EmbeddingService>,
 }

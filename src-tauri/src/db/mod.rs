@@ -27,6 +27,7 @@ impl Database {
     ///
     /// 目录无法创建、文件无法打开或 PRAGMA 设置失败时返回 [`AppError`]。
     pub fn open(path: impl AsRef<Path>) -> AppResult<Self> {
+        register_extensions();
         let path = path.as_ref().to_path_buf();
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)?;
@@ -46,6 +47,7 @@ impl Database {
     ///
     /// PRAGMA 设置失败时返回 [`AppError`]。
     pub fn open_in_memory() -> AppResult<Self> {
+        register_extensions();
         let connection = Connection::open_in_memory()?;
         Self::configure(&connection)?;
         Ok(Self {
@@ -95,4 +97,23 @@ impl Database {
     pub fn path(&self) -> &Path {
         &self.path
     }
+}
+
+/// 注册 sqlite-vec 扩展。
+///
+/// 扩展必须在打开任何连接之前注册（`sqlite3_auto_extension` 是进程级设置），
+/// 因此这里用 `Once` 保护，且两个构造函数都会调用。
+#[allow(clippy::missing_transmute_annotations)]
+fn register_extensions() {
+    static REGISTER: std::sync::Once = std::sync::Once::new();
+    REGISTER.call_once(|| {
+        // SAFETY: `sqlite3_vec_init` 是 sqlite-vec 提供的合法扩展入口，
+        // 其签名符合 `sqlite3_auto_extension` 的要求；只注册一次，
+        // 注册后只影响本进程新建的 SQLite 连接，不会执行外部代码。
+        unsafe {
+            rusqlite::ffi::sqlite3_auto_extension(Some(std::mem::transmute(
+                sqlite_vec::sqlite3_vec_init as *const (),
+            )));
+        }
+    });
 }

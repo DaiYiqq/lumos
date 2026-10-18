@@ -1,20 +1,27 @@
 //! Lumos 的 Tauri 运行时入口。
 //!
-//! 启动顺序：解析应用数据目录 → 打开数据库 → 执行迁移 → 启动摄取队列 →
-//! 重新装载未完成任务 → 注册全局状态与命令。
+//! 启动顺序：解析应用数据目录 → 打开数据库 → 执行迁移 → 启动嵌入服务与摄取队列 →
+//! 重新装载未完成任务 → 后台补写向量 → 注册全局状态与命令。
 
 pub mod commands;
 pub mod db;
+pub mod embedding;
 pub mod error;
 pub mod ingest;
+pub mod retrieval;
 pub mod state;
 
 use std::sync::Arc;
+use std::time::Duration;
 
 use tauri::Manager;
 
 use crate::db::repo::jobs;
+use crate::embedding::EmbeddingService;
 use crate::ingest::queue::IngestQueue;
+
+/// 模型就绪后每次补写的分块数量。
+const BACKFILL_BATCH: usize = 64;
 
 /// 构建并运行 Tauri 应用。
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -30,10 +37,18 @@ pub fn run() {
             let database = Arc::new(db::Database::open(data_dir.join("lumos.db"))?);
             database.migrate()?;
 
-            let queue = IngestQueue::start(app.handle().clone(), Arc::clone(&database));
+            let embedder = EmbeddingService::new(data_dir.join("models"));
+            embedder.warmup();
+
+            let queue = IngestQueue::start(
+                app.handle().clone(),
+                Arc::clone(&database),
+                Arc::clone(&embedder),
+            );
             app.manage(state::AppState {
                 db: Arc::clone(&database),
                 queue: Arc::clone(&queue),
+                embedder: Arc::clone(&embedder),
             });
 
             // 重新装载上次退出时未完成的任务
@@ -45,6 +60,7 @@ pub fn run() {
                 queue.enqueue(job.id);
             }
 
+            spawn_backfill(database, embedder);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -61,7 +77,46 @@ pub fn run() {
             commands::ingest::ingest_queue_state,
             commands::ingest::document_list,
             commands::ingest::document_delete,
+            commands::retrieval::search_chunks,
+            commands::retrieval::embedding_status,
+            commands::retrieval::embedding_backfill,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+/// 等嵌入模型就绪后，把历史上未向量化的分块补齐。
+///
+/// 模型加载失败时直接放弃；用户仍可使用关键词检索。
+fn spawn_backfill(database: Arc<db::Database>, embedder: Arc<EmbeddingService>) {
+    tauri::async_runtime::spawn(async move {
+        loop {
+            match embedder.status().state.as_str() {
+                "ready" => break,
+                "failed" => return,
+                _ => tokio::time::sleep(Duration::from_secs(2)).await,
+            }
+        }
+
+        loop {
+            let task_database = Arc::clone(&database);
+            let task_embedder = Arc::clone(&embedder);
+            let result = tauri::async_runtime::spawn_blocking(move || {
+                retrieval::backfill(&task_database, &task_embedder, BACKFILL_BATCH)
+            })
+            .await;
+
+            match result {
+                Ok(Ok(0)) => break,
+                Ok(Ok(_)) => {}
+                Ok(Err(error)) => {
+                    eprintln!("补写向量失败，稍后可手动重试：{error}");
+                    break;
+                }
+                Err(_) => break,
+            }
+
+            tokio::time::sleep(Duration::from_millis(200)).await;
+        }
+    });
 }

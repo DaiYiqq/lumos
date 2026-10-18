@@ -7,10 +7,15 @@ use sha2::{Digest, Sha256};
 
 use crate::db::Database;
 use crate::db::models::DocumentStatus;
+use crate::db::repo::chunks as chunk_repo;
 use crate::db::repo::documents::{self, NewChunk, NewDocument};
+use crate::embedding::EmbeddingService;
 use crate::error::{AppError, AppResult};
 use crate::ingest::chunk::{Chunk, DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, chunk_sections};
 use crate::ingest::extract;
+
+/// 单次嵌入的批大小。
+const EMBED_BATCH_SIZE: usize = 16;
 
 /// 单个文件的摄取结果。
 pub struct IngestOutcome {
@@ -24,6 +29,9 @@ pub struct IngestOutcome {
 
 /// 摄取一个文件。
 ///
+/// `embedder` 为 `None` 或模型尚未就绪时只入库不向量化，
+/// 之后由启动时的补写任务统一补齐向量。
+///
 /// # Errors
 ///
 /// 文件不可读、格式不支持、解析失败、内容为空或用户取消时返回错误。
@@ -33,6 +41,7 @@ pub fn ingest_file(
     library_id: &str,
     path: &Path,
     is_cancelled: impl Fn() -> bool,
+    embedder: Option<&EmbeddingService>,
 ) -> AppResult<IngestOutcome> {
     if is_cancelled() {
         return Err(AppError::Cancelled);
@@ -89,7 +98,7 @@ pub fn ingest_file(
         content_hash: &content_hash,
     };
 
-    database.with_connection(|connection| {
+    let document_id = database.with_connection(|connection| {
         documents::upsert_document(
             connection,
             &document,
@@ -99,11 +108,48 @@ pub fn ingest_file(
         )
     })?;
 
+    // 向量化失败不应该让整个文件变成失败状态：分块已经入库，
+    // 检索可以先用关键词，向量由启动补写任务或下次导入补齐。
+    if let Some(embedder) = embedder
+        && embedder.is_ready()
+        && let Err(error) = embed_document(database, embedder, &document_id)
+    {
+        eprintln!("为文档 {document_id} 生成向量失败（稍后会自动补写）：{error}");
+    }
+
     Ok(IngestOutcome {
         chunk_count,
         skipped: false,
         message: None,
     })
+}
+
+/// 为一份文档的全部分块生成并写入向量。
+///
+/// # Errors
+///
+/// 读取分块、嵌入计算或向量写入失败时返回错误。
+fn embed_document(
+    database: &Database,
+    embedder: &EmbeddingService,
+    document_id: &str,
+) -> AppResult<()> {
+    let chunks = database.with_connection(|connection| {
+        chunk_repo::list_chunks_for_document(connection, document_id)
+    })?;
+
+    for batch in chunks.chunks(EMBED_BATCH_SIZE) {
+        let texts: Vec<String> = batch.iter().map(|chunk| chunk.content.clone()).collect();
+        let vectors = embedder.embed_documents(&texts)?;
+        let pairs: Vec<(i64, Vec<f32>)> = batch
+            .iter()
+            .zip(vectors)
+            .map(|(chunk, vector)| (chunk.id, vector))
+            .collect();
+        database.with_connection(|connection| chunk_repo::insert_vectors(connection, &pairs))?;
+    }
+
+    Ok(())
 }
 
 /// 把分块转成待写入结构。
@@ -193,7 +239,8 @@ mod tests {
         }
 
         for path in &files {
-            let outcome = ingest_file(&database, &library_id, path, || false).expect("索引应成功");
+            let outcome =
+                ingest_file(&database, &library_id, path, || false, None).expect("索引应成功");
             assert!(outcome.chunk_count > 0, "每个文件都应产生分块");
         }
 
@@ -212,7 +259,7 @@ mod tests {
 
         // 增量索引：同一文件再次导入应被跳过
         let again =
-            ingest_file(&database, &library_id, &files[0], || false).expect("重复索引应成功");
+            ingest_file(&database, &library_id, &files[0], || false, None).expect("重复索引应成功");
         assert!(again.skipped);
 
         std::fs::remove_dir_all(&dir).ok();
@@ -275,7 +322,8 @@ mod tests {
         .expect("应能写入 HTML fixture");
 
         for path in [&docx_path, &epub_path, &html_path] {
-            let outcome = ingest_file(&database, &library_id, path, || false).expect("索引应成功");
+            let outcome =
+                ingest_file(&database, &library_id, path, || false, None).expect("索引应成功");
             assert!(outcome.chunk_count > 0, "{} 应产生分块", path.display());
         }
 
@@ -294,7 +342,7 @@ mod tests {
         let path = dir.join("empty.txt");
         std::fs::write(&path, "   ").expect("应能写入空文件");
 
-        let result = ingest_file(&database, &library_id, &path, || false);
+        let result = ingest_file(&database, &library_id, &path, || false, None);
         match result {
             Err(AppError::InvalidInput(message)) => {
                 assert!(message.contains("空") || message.contains("正文"));

@@ -197,3 +197,52 @@
 ### 下一步（P3）
 
 检索层：sqlite-vec 向量表 + 本地嵌入（fastembed）+ BM25（FTS5）→ RRF 融合；对比单一检索与混合检索效果并记录数据。
+
+---
+
+## P3 · 检索层：sqlite-vec + 本地嵌入 + BM25 → RRF
+
+**状态：已完成（2026-10-18）**
+
+### 已完成
+
+- **迁移 0003**：`chunks_vec` 虚拟表（`FLOAT[512]`）+ 删除触发器，向量随分块自动清理。
+- **本地嵌入** `embedding/`：
+  - `fastembed` + ONNX Runtime，模型 `BAAI/bge-small-zh-v1.5`（512 维）；
+  - 自研模型下载器（`model_store.rs`）：按 `HF_ENDPOINT` → 官方 → `hf-mirror.com` 的顺序容错下载 5 个模型文件，缓存到应用数据目录 `models/`；支持复用 hf-hub 已下载的主体；
+  - 后台线程加载模型，不阻塞启动；加载失败时检索自动降级为纯关键词。
+- **检索** `retrieval/`：
+  - 向量 KNN（sqlite-vec，`embedding MATCH ? AND k = ?`）；
+  - BM25（FTS5 trigram），中文查询按 3 字滑窗拆词后 OR，兼顾编号与词句查询；
+  - RRF 融合（k = 60），返回带 `documentTitle/path/pageNo/sectionPath/content` 的命中；
+  - `backfill` 补写历史分块向量，应用启动后自动执行。
+- **命令层**：`search_chunks`（hybrid / vector / keyword 三种模式，便于诊断与降级）、`embedding_status`、`embedding_backfill`。
+- **入库联动**：新文档入库后立即向量化；向量化失败不影响文档就绪，稍后自动补写。
+
+### 验收记录（实际运行结果）
+
+| 检查项                                      | 结果                                                                                                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `cargo test`                                | **31 passed**（含 RRF、向量写入/KNN、BM25 中文、迁移、删除清理）                                        |
+| `cargo clippy --all-targets -- -D warnings` | 零警告                                                                                                  |
+| 效果评估（16 条查询 / 24 篇语料，recall@3） | 关键词 **0.750**、向量 **0.688**、混合 **1.000**（详见 `docs/RETRIEVAL.md`）                            |
+| 真实应用（中文）                            | 模型 `ready`，查询「合同违约金上限是怎么约定的」→ top1「合同违约金条款」，`vectorRank=1, keywordRank=1` |
+| 真实应用（英文/PDF）                        | 查询「contrastive learning medical image segmentation」→ 命中 `paper.pdf`                               |
+| 降级路径                                    | 模型不可用时 `search_chunks` 自动返回 `mode=keyword`，应用仍可用                                        |
+
+### 踩坑记录
+
+1. **hf-hub 对镜像站的 range 响应不兼容**：`hf-mirror.com` 下载时报 `Header Content-Range is missing`。改为自研直接 HTTP 下载器，并保留镜像回退顺序。
+2. **FTS5 trigram 不接受整句中文查询**：`"违约金最多能赔多少"` 作为单个 phrase 永远命中不了；改为 3 字滑窗 OR 后才可用（编号类词仍整体引用）。
+3. **BGE 查询侧需要指令前缀**：查询向量加上「为这个句子生成表示以用于检索相关文章：」后，语义改写查询的召回明显提升。
+4. **分块正文不包含标题**：标题只写入 `section_path`，评估语料里把唯一编号放在标题里导致关键词检索全灭——提醒：需要关键词命中的信息必须在正文里。
+5. **Windows 控制台 GBK**：Rust 测试的中文输出显示为乱码，数字正常；不影响断言。
+
+### 与任务书的偏差
+
+- 效果评估语料为合成数据（16 条查询），用于验证「双通道互补」设计，不代表真实语料绝对水平；真实语料评估放在 P5 端到端场景测试中补充。
+- **rerank 未启用**（任务书列为进阶功能），按计划在 P6/P7 评估收益后再决定默认值。
+
+### 下一步（P4）
+
+Provider 层：`deepseek` / `ollama` / `none` 三种实现 + 运行期自动降级 + 流式输出；Key 存入系统凭据库，禁止明文落盘。

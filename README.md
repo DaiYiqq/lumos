@@ -28,8 +28,9 @@ to the exact spot. Indexes, vectors and chat history live in a single SQLite fil
 - **Shell**: Tauri 2 (Rust) + React 19 + TypeScript 6 + Vite 8
 - **State**: zustand, self-built minimal UI components (no heavy component library)
 - **Styling**: Tailwind CSS v4
-- **Backend**: Rust, rusqlite (bundled) with sqlite-vec + FTS5, tokio
+- **Backend**: Rust, rusqlite (bundled) with sqlite-vec + FTS5, fastembed (BGE-small-zh), tokio
 - **AI**: DeepSeek / Ollama / offline keyword fallback behind one provider trait
+- **Retrieval**: hybrid vector + BM25 with RRF fusion (see [docs/RETRIEVAL.md](docs/RETRIEVAL.md))
 - **Storage**: SQLite in the OS application-data directory
 
 ## Development
@@ -57,8 +58,8 @@ pnpm tauri build --bundles nsis   # Windows installer (use dmg/appimage/deb on o
 - ✅ P0 — environment check, scaffold, brand icon
 - ✅ P1 — SQLite schema, migrations, library CRUD
 - ✅ P2 — ingestion: parse → chunk → persist, persistent pause/resume queue
-- 🚧 P3 — hybrid retrieval (vector + BM25 + RRF)
-- 📋 P4 — providers: DeepSeek / Ollama / offline fallback with streaming
+- ✅ P3 — hybrid retrieval: sqlite-vec + BGE embeddings + BM25 → RRF
+- 🚧 P4 — providers: DeepSeek / Ollama / offline fallback with streaming
 - 📋 P5 — full UI with clickable citations
 - 📋 P6 — polish: themes, i18n, performance, accessibility
 - 📋 P7 — docs, README polish, demo GIF, CI/release workflows
