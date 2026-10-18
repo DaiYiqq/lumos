@@ -42,9 +42,13 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+      # Hosted runners already ship a stable Rust; avoid re-downloading a toolchain in CI
+      # (the rustup bootstrap endpoint is rate-limited and caused spurious failures).
+      - name: Ensure Rust toolchain
+        shell: bash
+        run: |
+          rustup show active-toolchain || rustup default stable
+          rustup component add rustfmt clippy
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
