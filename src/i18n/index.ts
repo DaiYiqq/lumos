@@ -141,6 +141,7 @@ const ENGLISH: Record<string, string> = {
   我: "Me",
   提问输入框: "Question input",
   离线关键词模式: "Offline keyword mode",
+  "演示模式 · Demo": "Demo mode",
 
   "所有配置只保存在本机；API Key 存在系统凭据库，不会写入数据库或日志。":
     "All settings stay on this device. API keys live in the OS credential store, never in the database or logs.",

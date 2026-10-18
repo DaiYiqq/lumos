@@ -9,10 +9,18 @@
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://daiyiqq.github.io/lumos/)
 
 Lumos 會匯入 PDF、EPUB、Word、Markdown、網頁、純文字與程式碼檔案，在**本機**完成解析、切塊、
 向量化與檢索，並**只依據你的文件**回答問題。每個結論都帶 `[n]` 引用編號，點一下即可回到原文的
 具體段落、頁碼與章節。文件、向量與對話全部保存在本機的一個 SQLite 資料庫裡。
+
+> ▶ **線上 Demo：** <https://daiyiqq.github.io/lumos/>
+>
+> Demo 完全在瀏覽器內執行，內建少量範例文件與模擬後端；不會上傳檔案，也不需要 API Key。
+> 真實文件、本機模型、檔案監看與 AI Provider 請下載桌面版體驗。
+
+![線上 Demo](docs/assets/demo-online.png)
 
 ## 下載
 

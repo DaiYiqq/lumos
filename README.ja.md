@@ -10,12 +10,21 @@
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://daiyiqq.github.io/lumos/)
 
 Lumos は PDF / EPUB / Word / Markdown / HTML / プレーンテキスト / コードを取り込み、解析・
 チャンク分割・ベクトル化・検索を**すべてローカル**で行います。回答は**あなたの文書だけ**に
 基づいて生成され、各主張には `[n]` の引用が付きます。引用をクリックすると、元の段落・
 ページ・セクションに戻れます。文書・ベクトル・会話履歴は 1 つの SQLite データベースに
 保存されます。
+
+> ▶ **オンライン Demo:** <https://daiyiqq.github.io/lumos/>
+>
+> Demo はブラウザ内だけで動作し、サンプル文書とモックバックエンドを使用します。ファイルは
+> アップロードされず、API キーも不要です。実際の文書・ローカル埋め込み・ファイル監視・
+> AI Provider を試すにはデスクトップ版をインストールしてください。
+
+![オンライン Demo](docs/assets/demo-online.png)
 
 ## ダウンロード
 

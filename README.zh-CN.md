@@ -9,10 +9,18 @@
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://daiyiqq.github.io/lumos/)
 
 Lumos 会导入 PDF、EPUB、Word、Markdown、网页、纯文本与代码文件，在**本机**完成解析、分块、
 向量化与检索，并**只依据你的文档**回答问题。每个结论都带 `[n]` 引用编号，点一下即可回到原文的
 具体段落、页码与章节。文档、向量与对话全部保存在本机的一个 SQLite 数据库里。
+
+> ▶ **在线 Demo：** <https://daiyiqq.github.io/lumos/>
+>
+> Demo 完全在浏览器内运行，内置少量示例文档与模拟后端；不会上传文件，也不需要 API Key。
+> 真实文档、本地模型、文件监听与 AI Provider 请下载桌面版体验。
+
+![在线 Demo](docs/assets/demo-online.png)
 
 ## 下载
 

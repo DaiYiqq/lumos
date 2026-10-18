@@ -9,11 +9,20 @@
 [![Downloads](https://img.shields.io/github/downloads/DaiYiqq/lumos/total)](https://github.com/DaiYiqq/lumos/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://daiyiqq.github.io/lumos/)
 
 Lumos ingests PDF / EPUB / Word / Markdown / HTML / plain text and code, indexes everything locally,
 and answers questions **only from your documents** — every claim carries a `[n]` citation that jumps
 back to the exact passage, page and section. Your files, embeddings and chat history stay in one
 SQLite database on your machine.
+
+> ▶ **Try the online demo:** <https://daiyiqq.github.io/lumos/>
+>
+> The demo runs entirely in your browser with a few sample documents and a mock backend — nothing is
+> uploaded and no API key is needed. Install the desktop app for your own documents, local embeddings,
+> file watching and real AI providers.
+
+![Online demo](docs/assets/demo-online.png)
 
 ## Download
 
