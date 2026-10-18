@@ -570,3 +570,46 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 
 - 维护者模型是「项目负责人 + 领域 owner」，后续通过 `GOVERNANCE.md` 的提名流程扩充 Reviewer 与翻译维护者。
 - 仓库未启用强制 PR 审核的 branch protection，避免阻塞个人维护；团队扩大后可按治理文档逐步开启。
+
+---
+
+## P10 · 在线 Demo（GitHub Pages）
+
+**状态：已完成并在线可用（2026-10-18）**
+
+### 在线地址
+
+**<https://daiyiqq.github.io/lumos/>**
+
+- 纯静态构建，浏览器内模拟后端；不需要账号、API Key 或安装。
+- 内置 3 个示例知识库（合同条款 / 论文库 / 个人笔记）与少量分块。
+- 可体验：知识库列表、问答页、模拟流式回答、`[n]` 引用与右侧原文面板、会话历史、中英文切换、设置页。
+- Demo 顶部有提示条，明确「浏览器内模拟数据，不会上传文件」并引导下载桌面版。
+
+### 实现方式
+
+- `src/lib/tauri.demo.ts`：实现与 Tauri 命令层相同的函数签名，数据保存在浏览器内存中；
+  提问时按关键词匹配示例分块，生成带引用的回答并以 4 字符/16ms 的节奏“流式”输出。
+- `src/demo/event-shim.ts` / `src/demo/dialog-shim.ts`：替代 Tauri 事件与文件选择插件。
+- `vite.config.ts`：`--mode demo` 时通过别名把 `@/lib/tauri`、事件与 dialog 替换为 Demo 实现，
+  并设置 `base = /lumos/`；桌面构建完全不受影响。
+- `src/components/layout/DemoBanner.tsx`：仅在 Demo 构建显示提示条；`AppShell` 增加顶部状态。
+- `.github/workflows/pages.yml`：push `main` 自动 `pnpm build:demo` 并部署到 GitHub Pages；
+  Pages 的 `build_type=workflow` 已通过 API 开启。
+- 4 种语言 README 均加入 Demo 徽章、链接与截图；发布页也加入 Demo 入口。
+
+### 验证
+
+| 检查项                             | 结果                                                      |
+| ---------------------------------- | --------------------------------------------------------- |
+| `pnpm typecheck` / `lint` / `test` | 通过（9 tests）                                           |
+| `pnpm build:demo`                  | 通过，产物引用 `/lumos/assets/...`                        |
+| 本地静态 Demo（无头 Edge）         | 示例库加载 → 合同提问 → 流式回答 → 引用面板正常           |
+| 线上 Demo（GitHub Pages）          | `https://daiyiqq.github.io/lumos/` 加载、问答、引用均正常 |
+| Pages workflow                     | Build + Deploy 两个 job success                           |
+| 截图                               | `docs/assets/demo-online.png`（线上版本实拍）             |
+
+### 说明
+
+- Demo 是**交互演示**，不是完整应用：不解析真实文件、不做嵌入/检索、不调用 AI；刷新页面即重置。
+- 安装包/桌面版仍是完整功能入口；Demo 中所有示例文档均为仓库内虚构内容。
