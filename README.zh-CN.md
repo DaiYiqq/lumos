@@ -229,7 +229,7 @@ Lumos 由社区共同维护，欢迎任何规模的贡献。
   [`translation`](https://github.com/DaiYiqq/lumos/labels/translation)
 
 ## 参与贡献
-
+作者：戴亿 联系方式：QQ号：1703205607
 欢迎提交 Issue 与 Pull Request。提交前请运行：
 
 ```bash
