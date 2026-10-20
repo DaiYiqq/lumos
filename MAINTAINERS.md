@@ -5,9 +5,25 @@ roles work and how to become a maintainer.
 
 ## Current maintainers
 
-| Name  | GitHub                                 | Role                      | Areas                                     |
-| ----- | -------------------------------------- | ------------------------- | ----------------------------------------- |
-| DaiYi | [@DaiYiqq](https://github.com/DaiYiqq) | Project lead / maintainer | All areas; releases and security response |
+| Name         | GitHub                                 | Role                      | Areas                                     |
+| ------------ | -------------------------------------- | ------------------------- | ----------------------------------------- |
+| 戴亿 (DaiYi) | [@DaiYiqq](https://github.com/DaiYiqq) | Project lead / maintainer | All areas; releases and security response |
+
+## Contact
+
+- Developer: **戴亿（DaiYi）**
+- QQ email: [1703205607@qq.com](mailto:1703205607@qq.com)
+- QQ: 1703205607
+- Gmail: [daiy91004@gmail.com](mailto:daiy91004@gmail.com)
+- 抖音 / Douyin: daiyi091004
+- 微信 / WeChat: daiyi091004
+- GitHub: [@DaiYiqq](https://github.com/DaiYiqq)
+- Issues: <https://github.com/DaiYiqq/lumos/issues>
+- Discussions: <https://github.com/DaiYiqq/lumos/discussions>
+- Security: see [SECURITY.md](SECURITY.md)
+
+See [DEVELOPERS.md](DEVELOPERS.md) for the full developer profile. These contacts are for project
+collaboration and feedback only.
 
 ## Area ownership
 

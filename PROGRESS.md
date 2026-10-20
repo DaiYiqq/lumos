@@ -613,3 +613,45 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 
 - Demo 是**交互演示**，不是完整应用：不解析真实文件、不做嵌入/检索、不调用 AI；刷新页面即重置。
 - 安装包/桌面版仍是完整功能入口；Demo 中所有示例文档均为仓库内虚构内容。
+
+---
+
+## P11 · 中文主 README 与开发者信息
+
+**状态：已完成（2026-10-20）**
+
+### 变更
+
+- **仓库默认 README 改为简体中文**：
+  - `README.md` = 简体中文（GitHub 仓库首页默认展示）
+  - `README.en.md` = English
+  - `README.zh-TW.md`、`README.ja.md` 保持
+  - 四种语言顶部切换器统一为「简体中文（默认）· English · 繁體中文 · 日本語」
+- **新增 `DEVELOPERS.md`**：开发者戴亿（DaiYi）的完整资料与联系方式。
+- **各语言 README 增加「开发者 / Developer」区块**：姓名、QQ 邮箱、QQ、Gmail、抖音、微信、GitHub；
+  并在结尾说明联系方式仅用于项目合作与反馈。
+- **同步更新**：
+  - `docs/I18N.md`（默认语言、文件布局、翻译状态、术语）；
+  - `CONTRIBUTING.md`（README 文件名）；
+  - `.github/workflows/release.yml` 的 Release notes 语言链接；
+  - `MAINTAINERS.md`（负责人姓名与联系方式）；
+  - `SECURITY.md`（备用 Gmail 报告渠道）；
+  - `package.json` 的 author / contributors 元数据。
+
+### 开发者信息
+
+| 项目    | 信息                                   |
+| ------- | -------------------------------------- |
+| 开发者  | 戴亿（DaiYi）                          |
+| QQ 邮箱 | 1703205607@qq.com                      |
+| QQ      | 1703205607                             |
+| Gmail   | daiy91004@gmail.com                    |
+| 抖音    | daiyi091004                            |
+| 微信    | daiyi091004                            |
+| GitHub  | [@DaiYiqq](https://github.com/DaiYiqq) |
+
+### 验证
+
+- `pnpm format` / `typecheck` / `lint` / `test` / `build` 通过；
+- 四个 README 语言互链正确，GitHub 默认渲染 `README.md`（中文）；
+- Release 页面与仓库主页（在线 Demo）链接保持有效。

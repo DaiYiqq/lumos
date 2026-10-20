@@ -2,7 +2,7 @@
 
 **本地優先的個人知識庫：把文件匯入，用 AI 提問，每個回答都標註可點擊的引用。**
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md)
+[简体中文](README.md) · [English](README.en.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md)
 
 [![CI](https://github.com/DaiYiqq/lumos/actions/workflows/ci.yml/badge.svg)](https://github.com/DaiYiqq/lumos/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases/latest)
@@ -241,6 +241,23 @@ cd src-tauri && cargo fmt --all && cargo clippy --all-targets -- -D warnings && 
 請保持提交聚焦，不要提交金鑰或個人文件；修正 Bug 時請補充測試。
 完整流程見 [CONTRIBUTING.md](CONTRIBUTING.md)，開發細節見
 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing)。
+
+## 開發者
+
+Lumos 由 **戴億（DaiYi）** 發起並維護。
+
+| 項目    | 聯絡方式                                          |
+| ------- | ------------------------------------------------- |
+| 開發者  | 戴億（DaiYi）                                     |
+| QQ 信箱 | [1703205607@qq.com](mailto:1703205607@qq.com)     |
+| QQ      | 1703205607                                        |
+| Gmail   | [daiy91004@gmail.com](mailto:daiy91004@gmail.com) |
+| 抖音    | daiyi091004                                       |
+| 微信    | daiyi091004                                       |
+| GitHub  | [@DaiYiqq](https://github.com/DaiYiqq)            |
+
+更多資訊見 [DEVELOPERS.md](DEVELOPERS.md)。以上聯絡方式僅供專案合作與問題回饋；
+安全漏洞請依 [SECURITY.md](SECURITY.md) 私下回報。
 
 ## 授權
 

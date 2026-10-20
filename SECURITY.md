@@ -17,7 +17,8 @@ Use one of these private channels:
 
 1. **GitHub Private Vulnerability Reporting** — go to the repository's **Security** tab →
    **Report a vulnerability** (preferred).
-2. If that is unavailable, email **1703205607@qq.com** with the subject `[Lumos security]`.
+2. If that is unavailable, email **1703205607@qq.com** (or **daiy91004@gmail.com**) with the subject
+   `[Lumos security]`.
 
 Please include:
 

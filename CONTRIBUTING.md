@@ -69,8 +69,8 @@ Architecture and data model: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - UI strings live in `src/i18n/index.ts` (Chinese source text → English translation).
   Add the key to the dictionary and use `useT()` in components; do not hard-code new user-facing
   Chinese or English text in JSX.
-- README translations are `README.zh-CN.md`, `README.zh-TW.md`, `README.ja.md`. Keep download tables,
-  links and version numbers in sync.
+- README translations are `README.md` (简体中文, default), `README.en.md`, `README.zh-TW.md` and
+  `README.ja.md`. Keep download tables, links and version numbers in sync.
 - See [docs/I18N.md](docs/I18N.md) for adding a new language end to end.
 
 ### Code style

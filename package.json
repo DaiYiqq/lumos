@@ -4,7 +4,14 @@
   "version": "0.1.0",
   "description": "Local-first personal knowledge base with citation-grounded AI answers.",
   "license": "MIT",
-  "author": "DaiYi <1703205607@qq.com>",
+  "author": "戴亿 (DaiYi) <daiy91004@gmail.com>",
+  "contributors": [
+    {
+      "name": "戴亿",
+      "email": "1703205607@qq.com",
+      "url": "https://github.com/DaiYiqq"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/DaiYiqq/lumos.git"

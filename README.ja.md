@@ -3,7 +3,7 @@
 **ローカルファーストの個人ナレッジベース。文書を取り込み、AI に質問すると、すべての回答に
 クリック可能な引用が付きます。**
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md)
+[简体中文](README.md) · [English](README.en.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md)
 
 [![CI](https://github.com/DaiYiqq/lumos/actions/workflows/ci.yml/badge.svg)](https://github.com/DaiYiqq/lumos/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/DaiYiqq/lumos)](https://github.com/DaiYiqq/lumos/releases/latest)
@@ -254,6 +254,23 @@ cd src-tauri && cargo fmt --all && cargo clippy --all-targets -- -D warnings && 
 コミットは焦点を絞り、秘密情報や個人文書を含めないでください。バグ修正にはテストを追加して
 ください。詳しい流れは [CONTRIBUTING.md](CONTRIBUTING.md)、開発の詳細は
 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#contributing) を参照してください。
+
+## 開発者
+
+Lumos は **戴亿（DaiYi）** が作成し、維持しています。
+
+| 項目           | 連絡先                                            |
+| -------------- | ------------------------------------------------- |
+| 開発者         | 戴亿（DaiYi）                                     |
+| QQ メール      | [1703205607@qq.com](mailto:1703205607@qq.com)     |
+| QQ             | 1703205607                                        |
+| Gmail          | [daiy91004@gmail.com](mailto:daiy91004@gmail.com) |
+| 抖音（Douyin） | daiyi091004                                       |
+| WeChat         | daiyi091004                                       |
+| GitHub         | [@DaiYiqq](https://github.com/DaiYiqq)            |
+
+詳細は [DEVELOPERS.md](DEVELOPERS.md) を参照してください。連絡先はプロジェクトに関する
+連絡のみに使用します。セキュリティ問題は [SECURITY.md](SECURITY.md) に従って非公開で報告してください。
 
 ## ライセンス
 
