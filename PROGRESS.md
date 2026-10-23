@@ -660,7 +660,7 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 
 ## P12 / v0.2.0 · 独立搜索页与复制能力
 
-**状态：已开发并验证，发布进行中（2026-10-23）**
+**状态：已完成并发布（2026-10-23）**
 
 ### 新增
 
@@ -684,11 +684,14 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 
 ### 验证
 
-| 检查项                             | 结果                                      |
-| ---------------------------------- | ----------------------------------------- |
-| `pnpm typecheck` / `lint` / `test` | 通过；前端 **10 tests**（新增搜索页用例） |
-| `pnpm build` / `pnpm build:demo`   | 通过                                      |
-| 在线 Demo 搜索                     | 构建后可通过模拟后端检索示例文档          |
+| 检查项                             | 结果                                                          |
+| ---------------------------------- | ------------------------------------------------------------- |
+| `pnpm typecheck` / `lint` / `test` | 通过；前端 **10 tests**（新增搜索页用例）                     |
+| `pnpm build` / `pnpm build:demo`   | 通过                                                          |
+| 在线 Demo 搜索                     | 本地静态 Demo 实机通过（搜索「违约金」→ 合同条款原文 + 来源） |
+| CI (`main`)                        | Frontend + Windows/macOS/Ubuntu Rust 全部 **success**         |
+| Release `v0.2.0`                   | 4 个平台 job 全部 success，9 个资产已发布                     |
+| 发布地址                           | <https://github.com/DaiYiqq/lumos/releases/tag/v0.2.0>        |
 
 ### 说明
 

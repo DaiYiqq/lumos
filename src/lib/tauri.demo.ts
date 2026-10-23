@@ -383,7 +383,7 @@ export function isTauriRuntime(): boolean {
 export async function getAppInfo(): Promise<AppInfo> {
   return {
     name: "Lumos",
-    version: "0.1.0-demo",
+    version: "0.2.0-demo",
     dataDir: "Browser memory (online demo)",
     dataDirDisplay: "浏览器内存（在线演示）",
     platform: "web",
