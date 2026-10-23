@@ -28,14 +28,14 @@ Lumos 會匯入 PDF、EPUB、Word、Markdown、網頁、純文字與程式碼檔
 
 | 平台        | 架構                   | 安裝檔                | 直接下載                                                                                                             |
 | ----------- | ---------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Windows** | x64                    | NSIS `.exe`（推薦）   | [Lumos_0.1.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64-setup.exe)     |
-| **Windows** | x64                    | MSI                   | [Lumos_0.1.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64_en-US.msi)     |
-| **Windows** | arm64                  | NSIS `.exe`           | [Lumos_0.1.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64-setup.exe) |
-| **Windows** | arm64                  | MSI                   | [Lumos_0.1.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64_en-US.msi) |
-| **macOS**   | Apple Silicon（M1–M4） | `.dmg`                | [Lumos_0.1.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_aarch64.dmg)         |
-| **Linux**   | x64                    | `.AppImage`（免安裝） | [Lumos_0.1.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.AppImage)   |
-| **Linux**   | x64（Debian/Ubuntu）   | `.deb`                | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
-| **Linux**   | x64（Fedora/RHEL）     | `.rpm`                | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
+| **Windows** | x64                    | NSIS `.exe`（推薦）   | [Lumos_0.2.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_x64-setup.exe)     |
+| **Windows** | x64                    | MSI                   | [Lumos_0.2.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_x64_en-US.msi)     |
+| **Windows** | arm64                  | NSIS `.exe`           | [Lumos_0.2.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_arm64-setup.exe) |
+| **Windows** | arm64                  | MSI                   | [Lumos_0.2.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_arm64_en-US.msi) |
+| **macOS**   | Apple Silicon（M1–M4） | `.dmg`                | [Lumos_0.2.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_aarch64.dmg)         |
+| **Linux**   | x64                    | `.AppImage`（免安裝） | [Lumos_0.2.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_amd64.AppImage)   |
+| **Linux**   | x64（Debian/Ubuntu）   | `.deb`                | [Lumos_0.2.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_amd64.deb)             |
+| **Linux**   | x64（Fedora/RHEL）     | `.rpm`                | [Lumos-0.2.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos-0.2.0-1.x86_64.rpm)       |
 
 → **所有版本：** <https://github.com/DaiYiqq/lumos/releases/latest>
 
@@ -48,14 +48,14 @@ Lumos 會匯入 PDF、EPUB、Word、Markdown、網頁、純文字與程式碼檔
 
 ### Windows（x64 / arm64）
 
-1. 一般電腦下載 `Lumos_0.1.0_x64-setup.exe`；ARM 電腦（Snapdragon 等）下載
-   `Lumos_0.1.0_arm64-setup.exe`。偏好 MSI 也可使用對應的 `.msi`。
+1. 一般電腦下載 `Lumos_0.2.0_x64-setup.exe`；ARM 電腦（Snapdragon 等）下載
+   `Lumos_0.2.0_arm64-setup.exe`。偏好 MSI 也可使用對應的 `.msi`。
 2. 執行安裝檔。若出現 SmartScreen，點選 **更多資訊 → 仍要執行**。
 3. 從開始功能表啟動 **Lumos**。資料目錄為 `%APPDATA%\com.daiyi.lumos`。
 
 ### macOS（Apple Silicon）
 
-1. 下載 `Lumos_0.1.0_aarch64.dmg` 並開啟。
+1. 下載 `Lumos_0.2.0_aarch64.dmg` 並開啟。
 2. 將 **Lumos** 拖曳到「應用程式」。
 3. 首次啟動：右鍵點擊應用程式 → **打開** → **打開**；或於
    **系統設定 → 隱私權與安全性 → 仍要打開** 中允許。
@@ -66,20 +66,20 @@ Lumos 會匯入 PDF、EPUB、Word、Markdown、網頁、純文字與程式碼檔
 - **AppImage（適用所有發行版）**
 
   ```bash
-  chmod +x Lumos_0.1.0_amd64.AppImage
-  ./Lumos_0.1.0_amd64.AppImage
+  chmod +x Lumos_0.2.0_amd64.AppImage
+  ./Lumos_0.2.0_amd64.AppImage
   ```
 
 - **Debian / Ubuntu**
 
   ```bash
-  sudo apt install ./Lumos_0.1.0_amd64.deb
+  sudo apt install ./Lumos_0.2.0_amd64.deb
   ```
 
 - **Fedora / RHEL**
 
   ```bash
-  sudo dnf install ./Lumos-0.1.0-1.x86_64.rpm
+  sudo dnf install ./Lumos-0.2.0-1.x86_64.rpm
   ```
 
 Linux 需要 WebKitGTK 4.1 與 appindicator 函式庫；Debian/Ubuntu 可安裝：
@@ -112,6 +112,9 @@ pnpm tauri build             # 產生目前平台的安裝檔
   章節與原始片段。
 - **混合檢索**：本機 BGE-small-zh 向量（`sqlite-vec`，512 維）+ SQLite FTS5 BM25，
   使用 RRF（k = 60）融合；沒有模型時自動退化為關鍵字檢索。
+- **獨立搜尋頁**：以混合 / 向量 / 關鍵字模式檢索原文片段，顯示來源、頁碼/章節與分數，
+  不需呼叫 AI 也能核對引用。
+- **一鍵複製**：複製回答 Markdown，或複製帶來源路徑的引用文字。
 - **三種 AI 模式**：DeepSeek（SSE 串流）、Ollama（本機模型）、離線抽取式備援；
   沒有依據時會明確說明，不編造答案。
 - **多知識庫**：不同主題獨立索引；支援匯入檔案或整個資料夾，暫停/繼續/取消匯入，
@@ -206,6 +209,7 @@ pnpm tauri build             # 產生目前平台的安裝檔
 - ✅ P6 — 打磨：日誌、檔案監看、資料匯出、錯誤邊界、虛擬清單、深色主題
 - ✅ P7 — 中英雙語、文件、CI 與發布流程
 - ✅ P8 — 首次公開發布：Windows（x64/arm64）、macOS Apple Silicon、Linux x64
+- ✅ v0.2.0 — 獨立搜尋頁（混合/向量/關鍵字）、複製回答與引用
 
 ## 文件
 

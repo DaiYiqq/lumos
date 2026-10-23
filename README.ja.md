@@ -33,14 +33,14 @@ OS とアーキテクチャに合わせて選択してください。
 
 | プラットフォーム | アーキテクチャ         | インストーラー            | 直接ダウンロード                                                                                                     |
 | ---------------- | ---------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Windows**      | x64                    | NSIS `.exe`（推奨）       | [Lumos_0.1.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64-setup.exe)     |
-| **Windows**      | x64                    | MSI                       | [Lumos_0.1.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64_en-US.msi)     |
-| **Windows**      | arm64                  | NSIS `.exe`               | [Lumos_0.1.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64-setup.exe) |
-| **Windows**      | arm64                  | MSI                       | [Lumos_0.1.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64_en-US.msi) |
-| **macOS**        | Apple Silicon（M1–M4） | `.dmg`                    | [Lumos_0.1.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_aarch64.dmg)         |
-| **Linux**        | x64                    | `.AppImage`（ポータブル） | [Lumos_0.1.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.AppImage)   |
-| **Linux**        | x64（Debian/Ubuntu）   | `.deb`                    | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
-| **Linux**        | x64（Fedora/RHEL）     | `.rpm`                    | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
+| **Windows**      | x64                    | NSIS `.exe`（推奨）       | [Lumos_0.2.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_x64-setup.exe)     |
+| **Windows**      | x64                    | MSI                       | [Lumos_0.2.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_x64_en-US.msi)     |
+| **Windows**      | arm64                  | NSIS `.exe`               | [Lumos_0.2.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_arm64-setup.exe) |
+| **Windows**      | arm64                  | MSI                       | [Lumos_0.2.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_arm64_en-US.msi) |
+| **macOS**        | Apple Silicon（M1–M4） | `.dmg`                    | [Lumos_0.2.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_aarch64.dmg)         |
+| **Linux**        | x64                    | `.AppImage`（ポータブル） | [Lumos_0.2.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_amd64.AppImage)   |
+| **Linux**        | x64（Debian/Ubuntu）   | `.deb`                    | [Lumos_0.2.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_amd64.deb)             |
+| **Linux**        | x64（Fedora/RHEL）     | `.rpm`                    | [Lumos-0.2.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos-0.2.0-1.x86_64.rpm)       |
 
 → **すべてのリリース:** <https://github.com/DaiYiqq/lumos/releases/latest>
 
@@ -54,15 +54,15 @@ OS とアーキテクチャに合わせて選択してください。
 
 ### Windows（x64 / arm64）
 
-1. 通常の PC では `Lumos_0.1.0_x64-setup.exe`、ARM PC（Snapdragon など）では
-   `Lumos_0.1.0_arm64-setup.exe` をダウンロードします。MSI 版も利用できます。
+1. 通常の PC では `Lumos_0.2.0_x64-setup.exe`、ARM PC（Snapdragon など）では
+   `Lumos_0.2.0_arm64-setup.exe` をダウンロードします。MSI 版も利用できます。
 2. インストーラーを実行します。SmartScreen が表示されたら **詳細情報 → 実行** をクリックします。
 3. スタートメニューから **Lumos** を起動します。データは
    `%APPDATA%\com.daiyi.lumos` に保存されます。
 
 ### macOS（Apple Silicon）
 
-1. `Lumos_0.1.0_aarch64.dmg` をダウンロードして開きます。
+1. `Lumos_0.2.0_aarch64.dmg` をダウンロードして開きます。
 2. **Lumos** を「アプリケーション」にドラッグします。
 3. 初回起動時はアプリを右クリック → **開く** → **開く**。または
    **システム設定 → プライバシーとセキュリティ → このまま開く** で許可します。
@@ -73,20 +73,20 @@ OS とアーキテクチャに合わせて選択してください。
 - **AppImage（すべてのディストリビューション）**
 
   ```bash
-  chmod +x Lumos_0.1.0_amd64.AppImage
-  ./Lumos_0.1.0_amd64.AppImage
+  chmod +x Lumos_0.2.0_amd64.AppImage
+  ./Lumos_0.2.0_amd64.AppImage
   ```
 
 - **Debian / Ubuntu**
 
   ```bash
-  sudo apt install ./Lumos_0.1.0_amd64.deb
+  sudo apt install ./Lumos_0.2.0_amd64.deb
   ```
 
 - **Fedora / RHEL**
 
   ```bash
-  sudo dnf install ./Lumos-0.1.0-1.x86_64.rpm
+  sudo dnf install ./Lumos-0.2.0-1.x86_64.rpm
   ```
 
 Linux では WebKitGTK 4.1 と appindicator ライブラリが必要です。Debian/Ubuntu の場合:
@@ -119,6 +119,9 @@ pnpm tauri build             # 現在のプラットフォーム向けインス�
   タイトル・パス・ページ番号・セクション・原文が表示されます。
 - **ハイブリッド検索** — ローカルの BGE-small-zh 埋め込み（`sqlite-vec`、512 次元）と
   SQLite FTS5 BM25 を RRF（k = 60）で融合。モデルがなくてもキーワード検索で動作します。
+- **独立検索ページ** — ハイブリッド / ベクトル / キーワードで原文を検索し、出典・ページ・
+  セクション・スコアを確認できます。AI を呼ばずに引用を検証できます。
+- **ワンクリックコピー** — 回答を Markdown として、または出典パス付きの引用をコピーできます。
 - **3 つの AI モード** — DeepSeek（SSE ストリーミング）、Ollama（ローカルモデル）、
   オフラインの抽出的フォールバック。根拠がない場合は明確に説明し、回答を捏造しません。
 - **複数ナレッジベース** — テーマごとに独立したインデックス。ファイルやフォルダーを
@@ -219,6 +222,7 @@ pnpm tauri build             # 現在のプラットフォーム向けインス�
 - ✅ P6 — 仕上げ: ログ、ファイル監視、エクスポート、エラーバウンダリ、仮想リスト、ダークテーマ
 - ✅ P7 — 中国語/英語 UI、ドキュメント、CI、リリースワークフロー
 - ✅ P8 — 初回公開リリース: Windows（x64/arm64）、macOS Apple Silicon、Linux x64
+- ✅ v0.2.0 — 独立検索ページ（ハイブリッド/ベクトル/キーワード）、回答と引用のコピー
 
 ## ドキュメント
 

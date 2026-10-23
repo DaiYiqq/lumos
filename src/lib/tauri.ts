@@ -117,6 +117,16 @@ export async function openDataDir(): Promise<void> {
   await invoke<void>("open_data_dir");
 }
 
+/** 在知识库内检索相关原文片段。 */
+export async function searchChunks(
+  libraryId: string,
+  query: string,
+  mode: import("@/types").SearchMode = "hybrid",
+  limit = 8,
+): Promise<import("@/types").SearchResponse> {
+  return invoke("search_chunks", { libraryId, query, mode, limit });
+}
+
 /** 流式问答：通过 Tauri Channel 接收事件。 */
 export async function streamChat(
   libraryId: string,

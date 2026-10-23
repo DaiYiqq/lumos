@@ -142,6 +142,28 @@ const ENGLISH: Record<string, string> = {
   提问输入框: "Question input",
   离线关键词模式: "Offline keyword mode",
   "演示模式 · Demo": "Demo mode",
+  搜索: "Search",
+  "在知识库中检索原文片段，结果可直接核对引用。":
+    "Search source passages inside a library and verify citations directly.",
+  检索模式: "Search mode",
+  混合检索: "Hybrid",
+  向量检索: "Vector",
+  关键词: "Keyword",
+  "输入关键词检索文档…": "Type keywords to search documents…",
+  搜索关键词: "Search keywords",
+  搜索文档: "Search documents",
+  "搜索中…": "Searching…",
+  "{count} 条结果": "{count} results",
+  没有找到相关片段: "No matching passages",
+  "换个关键词，或切换检索模式再试试。": "Try another keyword or a different search mode.",
+  "分数 {score}": "score {score}",
+  复制: "Copy",
+  已复制: "Copied",
+  复制引用: "Copy citation",
+  复制回答: "Copy answer",
+  "（向量模型不可用，已回退）": " (vector model unavailable, fell back)",
+  "搜索基于你导入的文档。先创建知识库并导入 PDF、Word、Markdown 等文件，再回来检索。":
+    "Search is grounded in your documents. Create a library, import files, then come back to search.",
 
   "所有配置只保存在本机；API Key 存在系统凭据库，不会写入数据库或日志。":
     "All settings stay on this device. API keys live in the OS credential store, never in the database or logs.",

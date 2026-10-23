@@ -15,7 +15,48 @@ export interface AppInfo {
 }
 
 /** 侧边栏一级导航。 */
-export type AppView = "library" | "chat" | "settings";
+export type AppView = "library" | "search" | "chat" | "settings";
+
+/** 检索模式。 */
+export type SearchMode = "hybrid" | "vector" | "keyword";
+
+/** 单条检索命中（与 Rust `SearchHit` 对应）。 */
+export interface SearchHit {
+  /** 分块 ID。 */
+  chunkId: number;
+  /** 文档 ID。 */
+  documentId: string;
+  /** 文档标题。 */
+  documentTitle: string;
+  /** 文档路径。 */
+  documentPath: string;
+  /** 页码。 */
+  pageNo: number | null;
+  /** 章节路径。 */
+  sectionPath: string | null;
+  /** 分块正文。 */
+  content: string;
+  /** 融合分数。 */
+  score: number;
+  /** 向量名次。 */
+  vectorRank: number | null;
+  /** 关键词名次。 */
+  keywordRank: number | null;
+}
+
+/** 检索响应。 */
+export interface SearchResponse {
+  /** 原始查询。 */
+  query: string;
+  /** 请求的模式。 */
+  requestedMode: string;
+  /** 实际使用的模式。 */
+  mode: string;
+  /** 向量检索是否参与。 */
+  vectorEnabled: boolean;
+  /** 命中列表。 */
+  hits: SearchHit[];
+}
 
 /** 知识库基础信息。 */
 export interface Library {

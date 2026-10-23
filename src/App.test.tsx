@@ -17,6 +17,7 @@ const api = {
   listDocuments: vi.fn(),
   listIngestJobs: vi.fn(),
   getIngestQueueState: vi.fn(),
+  searchChunks: vi.fn(),
   listConversations: vi.fn(),
   getConversation: vi.fn(),
   streamChat: vi.fn(),
@@ -30,7 +31,7 @@ vi.mock("@/lib/tauri", () => ({
   isTauriRuntime: () => true,
   getAppInfo: vi.fn().mockResolvedValue({
     name: "Lumos",
-    version: "0.1.0",
+    version: "0.2.0",
     dataDir: "C:/Users/test/AppData/Roaming/com.daiyi.lumos",
     dataDirDisplay: "~/AppData/Roaming/com.daiyi.lumos",
     platform: "windows",
@@ -42,6 +43,7 @@ vi.mock("@/lib/tauri", () => ({
   listDocuments: (...args: unknown[]) => api.listDocuments(...args),
   listIngestJobs: (...args: unknown[]) => api.listIngestJobs(...args),
   getIngestQueueState: (...args: unknown[]) => api.getIngestQueueState(...args),
+  searchChunks: (...args: unknown[]) => api.searchChunks(...args),
   importPaths: vi.fn().mockResolvedValue(0),
   pauseIngestQueue: vi.fn().mockResolvedValue(true),
   resumeIngestQueue: vi.fn().mockResolvedValue(false),
@@ -132,6 +134,13 @@ beforeEach(() => {
   api.listDocuments.mockReset().mockResolvedValue([]);
   api.listIngestJobs.mockReset().mockResolvedValue([]);
   api.getIngestQueueState.mockReset().mockResolvedValue(false);
+  api.searchChunks.mockReset().mockResolvedValue({
+    query: "",
+    requestedMode: "hybrid",
+    mode: "hybrid",
+    vectorEnabled: true,
+    hits: [],
+  });
   api.listConversations.mockReset().mockResolvedValue([]);
   api.getConversation.mockReset();
   api.streamChat.mockReset();
@@ -162,7 +171,7 @@ describe("应用外壳", () => {
     expect(screen.getByRole("button", { name: "问答" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "设置" })).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "还没有知识库" })).toBeInTheDocument();
-    expect(await screen.findByText(/Lumos v0\.1\.0/)).toBeInTheDocument();
+    expect(await screen.findByText(/Lumos v0\.2\.0/)).toBeInTheDocument();
   });
 
   it("导航可以在三个一级页面之间切换", async () => {
@@ -183,7 +192,7 @@ describe("应用外壳", () => {
   it("状态栏显示应用版本与运行平台", async () => {
     render(<App />);
 
-    expect(await screen.findByText(/Lumos v0\.1\.0 · windows/)).toBeInTheDocument();
+    expect(await screen.findByText(/Lumos v0\.2\.0 · windows/)).toBeInTheDocument();
     expect(await screen.findByText(/com\.daiyi\.lumos/)).toBeInTheDocument();
   });
 
@@ -338,5 +347,43 @@ describe("问答", () => {
 
     expect((await screen.findAllByText("离线关键词模式")).length).toBeGreaterThan(0);
     expect(await screen.findByText(/未配置 AI 模型/)).toBeInTheDocument();
+  });
+});
+
+describe("搜索", () => {
+  it("可以检索文档片段并展示来源", async () => {
+    const user = userEvent.setup();
+    api.listLibraries.mockResolvedValue([library]);
+    api.searchChunks.mockResolvedValue({
+      query: "违约金",
+      requestedMode: "hybrid",
+      mode: "hybrid",
+      vectorEnabled: true,
+      hits: [
+        {
+          chunkId: 9,
+          documentId: "doc-1",
+          documentTitle: "合同违约金条款",
+          documentPath: "/tmp/contract.docx",
+          pageNo: 3,
+          sectionPath: "第九条",
+          content: "违约金上限为合同总额的百分之二十。",
+          score: 0.03,
+          vectorRank: 1,
+          keywordRank: 1,
+        },
+      ],
+    });
+
+    render(<App />);
+    await user.click(await screen.findByRole("button", { name: "搜索" }));
+    expect(await screen.findByRole("heading", { name: "搜索" })).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("搜索关键词"), "违约金");
+    await user.click(screen.getByRole("button", { name: "搜索文档" }));
+
+    expect(await screen.findByText("合同违约金条款")).toBeInTheDocument();
+    expect(screen.getByText(/百分之二十/)).toBeInTheDocument();
+    expect(api.searchChunks).toHaveBeenCalledWith("lib-1", "违约金", "hybrid", 12);
   });
 });

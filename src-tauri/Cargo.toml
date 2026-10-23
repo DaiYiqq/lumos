@@ -1,6 +1,6 @@
 [package]
 name = "lumos"
-version = "0.1.0"
+version = "0.2.0"
 description = "Lumos — local-first personal knowledge base with citation-grounded AI answers"
 authors = ["DaiYi <1703205607@qq.com>"]
 edition = "2024"

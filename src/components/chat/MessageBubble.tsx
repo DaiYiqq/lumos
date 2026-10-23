@@ -1,7 +1,9 @@
-import { Loader2, Sparkles } from "lucide-react";
+import { Check, Copy, Loader2, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { Markdown } from "@/components/chat/Markdown";
 import { useT } from "@/i18n";
+import { copyToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 import type { DisplayMessage } from "@/stores/chat";
 
@@ -18,6 +20,14 @@ interface MessageBubbleProps {
 export function MessageBubble({ message, streaming, onCitation }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const t = useT();
+  const [copied, setCopied] = useState(false);
+
+  const copyAnswer = async (): Promise<void> => {
+    if (await copyToClipboard(message.content)) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    }
+  };
 
   return (
     <div className={cn("flex gap-3", isUser ? "flex-row-reverse" : "flex-row")}>
@@ -54,6 +64,23 @@ export function MessageBubble({ message, streaming, onCitation }: MessageBubbleP
 
         {streaming && message.content ? (
           <span className="bg-brand ml-0.5 inline-block h-3.5 w-1 animate-pulse rounded-sm align-middle" />
+        ) : null}
+
+        {!isUser && message.content && !streaming ? (
+          <div className="mt-2 flex justify-end">
+            <button
+              type="button"
+              onClick={() => void copyAnswer()}
+              className="text-ink-faint hover:text-brand inline-flex items-center gap-1 text-[10.5px]"
+            >
+              {copied ? (
+                <Check size={11} aria-hidden="true" />
+              ) : (
+                <Copy size={11} aria-hidden="true" />
+              )}
+              {copied ? t("已复制") : t("复制回答")}
+            </button>
+          </div>
         ) : null}
       </div>
     </div>

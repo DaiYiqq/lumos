@@ -5,6 +5,7 @@ import { DemoBanner } from "@/components/layout/DemoBanner";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { LibraryView } from "@/components/library/LibraryView";
+import { SearchView } from "@/components/search/SearchView";
 import { SettingsView } from "@/components/settings/SettingsView";
 import { useAppInfoStore } from "@/stores/appInfo";
 import { useUiStore } from "@/stores/ui";
@@ -28,6 +29,7 @@ export function AppShell() {
         <main className="flex min-w-0 flex-1 flex-col">
           <div className="lumos-aurora flex min-h-0 flex-1 flex-col overflow-hidden">
             {activeView === "library" ? <LibraryView /> : null}
+            {activeView === "search" ? <SearchView /> : null}
             {activeView === "chat" ? <ChatView /> : null}
             {activeView === "settings" ? <SettingsView /> : null}
           </div>

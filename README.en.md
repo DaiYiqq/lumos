@@ -31,14 +31,14 @@ Pick the file for your OS and architecture:
 
 | Platform    | Architecture          | Installer                 | Direct download                                                                                                      |
 | ----------- | --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Windows** | x64                   | NSIS `.exe` (recommended) | [Lumos_0.1.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64-setup.exe)     |
-| **Windows** | x64                   | MSI                       | [Lumos_0.1.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_x64_en-US.msi)     |
-| **Windows** | arm64                 | NSIS `.exe`               | [Lumos_0.1.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64-setup.exe) |
-| **Windows** | arm64                 | MSI                       | [Lumos_0.1.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_arm64_en-US.msi) |
-| **macOS**   | Apple Silicon (M1–M4) | `.dmg`                    | [Lumos_0.1.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_aarch64.dmg)         |
-| **Linux**   | x64                   | `.AppImage` (portable)    | [Lumos_0.1.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.AppImage)   |
-| **Linux**   | x64 (Debian/Ubuntu)   | `.deb`                    | [Lumos_0.1.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos_0.1.0_amd64.deb)             |
-| **Linux**   | x64 (Fedora/RHEL)     | `.rpm`                    | [Lumos-0.1.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.1.0/Lumos-0.1.0-1.x86_64.rpm)       |
+| **Windows** | x64                   | NSIS `.exe` (recommended) | [Lumos_0.2.0_x64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_x64-setup.exe)     |
+| **Windows** | x64                   | MSI                       | [Lumos_0.2.0_x64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_x64_en-US.msi)     |
+| **Windows** | arm64                 | NSIS `.exe`               | [Lumos_0.2.0_arm64-setup.exe](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_arm64-setup.exe) |
+| **Windows** | arm64                 | MSI                       | [Lumos_0.2.0_arm64_en-US.msi](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_arm64_en-US.msi) |
+| **macOS**   | Apple Silicon (M1–M4) | `.dmg`                    | [Lumos_0.2.0_aarch64.dmg](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_aarch64.dmg)         |
+| **Linux**   | x64                   | `.AppImage` (portable)    | [Lumos_0.2.0_amd64.AppImage](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_amd64.AppImage)   |
+| **Linux**   | x64 (Debian/Ubuntu)   | `.deb`                    | [Lumos_0.2.0_amd64.deb](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos_0.2.0_amd64.deb)             |
+| **Linux**   | x64 (Fedora/RHEL)     | `.rpm`                    | [Lumos-0.2.0-1.x86_64.rpm](https://github.com/DaiYiqq/lumos/releases/download/v0.2.0/Lumos-0.2.0-1.x86_64.rpm)       |
 
 → **All releases:** <https://github.com/DaiYiqq/lumos/releases/latest>
 
@@ -52,7 +52,7 @@ Pick the file for your OS and architecture:
 
 ### Windows (x64 / arm64)
 
-1. Download `Lumos_0.1.0_x64-setup.exe` (most PCs) or `Lumos_0.1.0_arm64-setup.exe` (Snapdragon /
+1. Download `Lumos_0.2.0_x64-setup.exe` (most PCs) or `Lumos_0.2.0_arm64-setup.exe` (Snapdragon /
    ARM PCs). MSI packages are available if you prefer `msiexec`.
 2. Run the installer. If SmartScreen appears, click **More info → Run anyway**.
 3. Launch **Lumos** from the Start menu. The app data directory is
@@ -60,7 +60,7 @@ Pick the file for your OS and architecture:
 
 ### macOS (Apple Silicon)
 
-1. Download `Lumos_0.1.0_aarch64.dmg` and open it.
+1. Download `Lumos_0.2.0_aarch64.dmg` and open it.
 2. Drag **Lumos** into **Applications**.
 3. First launch: right-click the app → **Open** → **Open** (or allow it in
    **System Settings → Privacy & Security → Open Anyway**).
@@ -71,20 +71,20 @@ Pick the file for your OS and architecture:
 - **AppImage (any distro)**
 
   ```bash
-  chmod +x Lumos_0.1.0_amd64.AppImage
-  ./Lumos_0.1.0_amd64.AppImage
+  chmod +x Lumos_0.2.0_amd64.AppImage
+  ./Lumos_0.2.0_amd64.AppImage
   ```
 
 - **Debian / Ubuntu**
 
   ```bash
-  sudo apt install ./Lumos_0.1.0_amd64.deb
+  sudo apt install ./Lumos_0.2.0_amd64.deb
   ```
 
 - **Fedora / RHEL**
 
   ```bash
-  sudo dnf install ./Lumos-0.1.0-1.x86_64.rpm
+  sudo dnf install ./Lumos-0.2.0-1.x86_64.rpm
   ```
 
 Linux needs WebKitGTK 4.1 and an app-indicator library; on Debian/Ubuntu:
@@ -117,6 +117,9 @@ Full development, testing and troubleshooting guide: [docs/DEVELOPMENT.md](docs/
   with title, path, page number, section path and the original text.
 - **Hybrid retrieval** — local BGE-small-zh embeddings (`sqlite-vec`, 512-dim) + SQLite FTS5 BM25,
   fused with Reciprocal Rank Fusion (k = 60). Works offline with keyword-only mode.
+- **Standalone search** — search source passages with hybrid / vector / keyword modes, inspect the
+  source, page/section and score, and verify citations without calling an AI model.
+- **Copy in one click** — copy an answer as Markdown, or copy a citation with its source path.
 - **Three AI modes** — DeepSeek (SSE streaming), Ollama (local models), and an offline extractive
   fallback that never pretends to answer without evidence.
 - **Knowledge bases** — separate libraries with independent indexes; import files or whole folders,
@@ -216,6 +219,7 @@ Benchmarked on a 24-document mixed corpus with 16 Chinese queries (recall@3, see
 - ✅ P6 — polish: logging, file watcher, data export, error boundary, virtual list, dark theme
 - ✅ P7 — bilingual UI (zh/en), documentation, CI and release workflows
 - ✅ P8 — first public release: Windows (x64/arm64), macOS Apple Silicon, Linux x64 installers
+- ✅ v0.2.0 — standalone search (hybrid/vector/keyword), copy answers and citations
 
 ## Documentation
 

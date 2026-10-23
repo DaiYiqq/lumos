@@ -18,6 +18,8 @@ import type {
   Library,
   LibrarySummary,
   ProviderDetection,
+  SearchMode,
+  SearchResponse,
   StoredMessage,
 } from "@/types";
 import type { ExportSummary } from "@/types/export";
@@ -425,6 +427,49 @@ export async function deleteLibrary(id: string): Promise<void> {
 export async function listDocuments(libraryId: string): Promise<DocumentSummary[]> {
   await sleep(100);
   return DOCUMENTS.filter((document) => document.libraryId === libraryId);
+}
+
+/** Demo 检索：按关键词对内置分块做简单匹配，模拟混合检索的结果。 */
+export async function searchChunks(
+  libraryId: string,
+  query: string,
+  mode: SearchMode = "hybrid",
+): Promise<SearchResponse> {
+  await sleep(180);
+  const normalized = query.trim().toLowerCase();
+  const documentIds = new Set(
+    DOCUMENTS.filter((document) => document.libraryId === libraryId).map((document) => document.id),
+  );
+  const terms = normalized.split(/\s+/).filter(Boolean);
+  const hits = CHUNKS.filter((chunk) => documentIds.has(chunk.documentId))
+    .map((chunk) => {
+      const haystack = `${chunk.title} ${chunk.sectionPath ?? ""} ${chunk.content}`.toLowerCase();
+      const score = terms.reduce((total, term) => total + (haystack.includes(term) ? 1 : 0), 0);
+      return { chunk, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score)
+    .slice(0, 12)
+    .map((item, index) => ({
+      chunkId: item.chunk.id,
+      documentId: item.chunk.documentId,
+      documentTitle: item.chunk.title,
+      documentPath: item.chunk.path,
+      pageNo: item.chunk.pageNo,
+      sectionPath: item.chunk.sectionPath,
+      content: item.chunk.content,
+      score: 1 / (60 + index + 1),
+      vectorRank: mode === "keyword" ? null : index + 1,
+      keywordRank: mode === "vector" ? null : index + 1,
+    }));
+
+  return {
+    query,
+    requestedMode: mode,
+    mode,
+    vectorEnabled: mode !== "keyword",
+    hits,
+  };
 }
 
 export async function deleteDocument(id: string): Promise<void> {

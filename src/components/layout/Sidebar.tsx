@@ -1,4 +1,4 @@
-import { Library, MessagesSquare, Moon, Settings, Sun, SunMoon } from "lucide-react";
+import { Library, MessagesSquare, Moon, Search, Settings, Sun, SunMoon } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Logo } from "@/components/ui/Logo";
@@ -15,6 +15,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { view: "library", label: "知识库", icon: Library },
+  { view: "search", label: "搜索", icon: Search },
   { view: "chat", label: "问答", icon: MessagesSquare },
   { view: "settings", label: "设置", icon: Settings },
 ];

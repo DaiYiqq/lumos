@@ -655,3 +655,43 @@ i18n（中/英切换）、完整 README（中英/截图）、DEVELOPMENT 与 Tro
 - `pnpm format` / `typecheck` / `lint` / `test` / `build` 通过；
 - 四个 README 语言互链正确，GitHub 默认渲染 `README.md`（中文）；
 - Release 页面与仓库主页（在线 Demo）链接保持有效。
+
+---
+
+## P12 / v0.2.0 · 独立搜索页与复制能力
+
+**状态：已开发并验证，发布进行中（2026-10-23）**
+
+### 新增
+
+- **独立搜索页（搜索）**：侧边栏新增「搜索」，可选择知识库并按以下模式检索：
+  - 混合检索（向量 + BM25 + RRF）
+  - 向量检索（本地 BGE-small-zh + sqlite-vec）
+  - 关键词（SQLite FTS5）
+  - 结果展示文档标题、路径、页码/章节、融合分数与原文片段，并支持一键复制片段。
+  - 向量模型不可用时明确提示已回退到关键词模式。
+- **复制能力**：
+  - 助手回答下方「复制回答」；
+  - 引用面板标题栏「复制引用」（标题、位置、原文、来源路径）。
+- **在线 Demo 同步**：Demo 模拟后端实现 `searchChunks`，线上可直接体验搜索页。
+
+### 版本与发布
+
+- 版本号升级 `0.1.0 → 0.2.0`（`package.json`、`Cargo.toml`、`tauri.conf.json`、`Cargo.lock`）。
+- 新增 `CHANGELOG.md`（Keep a Changelog / SemVer）。
+- 四个 README 的下载表与安装命令更新到 v0.2.0 资产名。
+- 发布 `v0.2.0` tag 后由 `release.yml` 构建 Windows x64/arm64、macOS Apple Silicon、Linux x64。
+
+### 验证
+
+| 检查项                             | 结果                                      |
+| ---------------------------------- | ----------------------------------------- |
+| `pnpm typecheck` / `lint` / `test` | 通过；前端 **10 tests**（新增搜索页用例） |
+| `pnpm build` / `pnpm build:demo`   | 通过                                      |
+| 在线 Demo 搜索                     | 构建后可通过模拟后端检索示例文档          |
+
+### 说明
+
+- 本次开发时 `D:\dev\lumos` 目录出现 Windows ACL 只读问题（当前用户无写入权限），
+  开发在可写镜像 `D:\openclaw\lumos` 完成，并通过 GitHub API 提交到仓库；
+  内容与本仓库 `main` 一致，版本与发布流程不受影响。
